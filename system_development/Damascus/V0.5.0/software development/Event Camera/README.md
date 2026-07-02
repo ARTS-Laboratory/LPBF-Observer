@@ -1,57 +1,52 @@
-# Triton2 EVS Python Display Starter
+# Network Adapter Configuration
 
-This is a first milestone project:
+## Overview
 
-```text
-Triton2 EVS -> Arena Python -> OpenCV display window
-```
+To help improve camera streaming performance and reduce dropped packets
+or acquisition interruptions, configure your network adapter with the
+highest supported values for the settings below.
 
-No LabVIEW TCP is included yet. Once this displays reliably, the display step can be replaced or duplicated with a TCP sender.
+> **Note:** Do **not** manually enter the values shown in example
+> screenshots. Instead, configure each setting to the **maximum value
+> allowed by your network adapter**.
 
-## Files
+## Configuration Steps
 
-```text
-evs_functions.py    # reusable camera/helper functions
-main_display.py     # main script that calls the functions
-```
+1.  Open **Network Connections**.
+2.  Right-click the Ethernet adapter connected to the camera and select
+    **Properties**.
+3.  Click **Configure**.
+4.  Open the **Advanced** tab.
+5.  Locate the following settings:
+    -   **Jumbo Packet**
+    -   **Receive Buffer**
+6.  Set each option to the **maximum value available** in the adapter's
+    configuration.
+7.  Click **OK** to save the changes.
 
-## Install / environment
+------------------------------------------------------------------------
 
-Use the Python environment installed with ArenaView JupyterLab, or install the Arena Python wheel from the Arena SDK install directory into your own Python environment.
+## Image Placeholder 1
 
-Then install:
+> Insert a screenshot showing the **Jumbo Packet** setting here.
 
-```bash
-pip install numpy opencv-python
-```
+![Jumbo Packet Screenshot](Media\JumboPacket.png)
 
-## Run
+------------------------------------------------------------------------
 
-```bash
-python main_display.py
-```
+## Image Placeholder 2
 
-Optional:
+> Insert a screenshot showing the **Receive Buffer** setting here.
 
-```bash
-python main_display.py --serial YOUR_CAMERA_SERIAL
-python main_display.py --buffers 30
-python main_display.py --accumulation-us 5000
-python main_display.py --frame-rate 60
-```
+![Receive Buffer Screenshot](Media\ReceiveBuffers.png)
 
-Press `q` or `Esc` to close the OpenCV window.
+------------------------------------------------------------------------
 
-## Notes for the Triton2 EVS
+## Notes
 
-The Triton2 EVS is an event camera. It does not make normal exposure-based frames. For first display, you want CD frames, which are accumulated event images. If the script says the buffer looks like raw event data, then Python is receiving EVT/event buffers rather than displayable CD frames.
-
-If that happens, open ArenaView, confirm you can display CD frames there, then check the exact EVS/CD-frame GenICam node names used by your SDK/firmware version. Update the candidate node names in `configure_for_display()` if needed.
-
-## Development order
-
-1. Run ArenaView and confirm the camera displays CD frames.
-2. Close ArenaView so Python has read-write camera access.
-3. Run `python main_display.py`.
-4. Move a high-contrast object in front of the camera. A stationary scene may show little or no event activity.
-5. Once OpenCV display works, add TCP output as the next milestone.
+-   The maximum available values may differ depending on the network
+    adapter manufacturer and model.
+-   After changing these settings, restart the network connection or
+    reboot the computer if required.
+-   These settings are commonly used to improve the reliability of
+    high-bandwidth GigE Vision camera streaming.
