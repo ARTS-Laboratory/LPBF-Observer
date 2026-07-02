@@ -14,7 +14,7 @@ Download the Arena SDK installer using the link below (You must make an account 
 
 **Arena SDK Installer:**
 
-![Arena SDK Installer](https://thinklucid.com/downloads-hub/)
+[Arena SDK Installer](https://thinklucid.com/downloads-hub/)
 
 
 ---
