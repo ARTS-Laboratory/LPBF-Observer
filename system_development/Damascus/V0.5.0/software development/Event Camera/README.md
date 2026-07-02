@@ -1,54 +1,3 @@
-# Network Adapter Configuration
-
-## Overview
-
-To help improve camera streaming performance and reduce dropped packets
-or acquisition interruptions, configure your network adapter with the
-highest supported values for the settings below.
-
-> **Note:** Do **not** manually enter the values shown in example
-> screenshots. Instead, configure each setting to the **maximum value
-> allowed by your network adapter**.
-
-## Configuration Steps
-
-1.  Open **Network Connections**.
-2.  Right-click the Ethernet adapter connected to the camera and select
-    **Properties**.
-3.  Click **Configure**.
-4.  Open the **Advanced** tab.
-5.  Locate the following settings:
-    -   **Jumbo Packet**
-    -   **Receive Buffer**
-6.  Set each option to the **maximum value available** in the adapter's
-    configuration.
-7.  Click **OK** to save the changes.
-
-------------------------------------------------------------------------
-
-## Jumbo Packet
-
-<img src="Media\JumboPacket.png" alt="App Preview" width="500">
-
-------------------------------------------------------------------------
-
-## Receive Buffer
-
-<img src="Media\ReceiveBuffers.png" alt="App Preview" width="500">
-
-------------------------------------------------------------------------
-
-## Notes
-
--   The maximum available values may differ depending on the network
-    adapter manufacturer and model.
--   After changing these settings, restart the network connection or
-    reboot the computer if required.
--   These settings are commonly used to improve the reliability of
-    high-bandwidth GigE Vision camera streaming.
-
-
-
 # Arena SDK Installation Guide
 
 ## Overview
@@ -126,3 +75,109 @@ If the application cannot communicate with the camera:
 ## Additional Notes
 
 Always install the version of the Arena SDK that matches the version required by this application. Using a different SDK version may result in compatibility issues.
+
+
+
+# Network Adapter Configuration
+
+## Overview
+
+To help improve camera streaming performance and reduce dropped packets
+or acquisition interruptions, configure your network adapter with the
+highest supported values for the settings below.
+
+> **Note:** Do **not** manually enter the values shown in example
+> screenshots. Instead, configure each setting to the **maximum value
+> allowed by your network adapter**.
+
+## Configuration Steps
+
+1.  Open **Network Connections**.
+2.  Right-click the Ethernet adapter connected to the camera and select
+    **Properties**.
+3.  Click **Configure**.
+4.  Open the **Advanced** tab.
+5.  Locate the following settings:
+    -   **Jumbo Packet**
+    -   **Receive Buffer**
+6.  Set each option to the **maximum value available** in the adapter's
+    configuration.
+7.  Click **OK** to save the changes.
+
+------------------------------------------------------------------------
+
+## Jumbo Packet
+
+<img src="Media\JumboPacket.png" alt="App Preview" width="500">
+
+------------------------------------------------------------------------
+
+## Receive Buffer
+
+<img src="Media\ReceiveBuffers.png" alt="App Preview" width="500">
+
+------------------------------------------------------------------------
+
+## Notes
+
+-   The maximum available values may differ depending on the network
+    adapter manufacturer and model.
+-   After changing these settings, restart the network connection or
+    reboot the computer if required.
+-   These settings are commonly used to improve the reliability of
+    high-bandwidth GigE Vision camera streaming.
+
+------------------------------------------------------------------------
+
+## Verify the Device Link Speed
+
+After configuring the network adapter, verify that the camera is operating at the expected network link speed.
+
+### Why This Matters
+
+If the **Device Link Speed** is lower than the camera's rated speed, the camera may experience:
+
+- Reduced bandwidth
+- Dropped packets
+- Incomplete images
+- Acquisition interruptions
+- Reduced overall performance
+
+### Expected Device Link Speed
+
+The **Device Link Speed** reported in ArenaView should match the maximum speed supported by your camera.
+
+| Camera Link Speed | Expected DeviceLinkSpeed |
+|-------------------|-------------------------:|
+| 1 Gigabit (1G)    | 1,000,000,000 bps |
+| 2.5 Gigabit (2.5G)| 2,500,000,000 bps |
+| 5 Gigabit (5G)    | 5,000,000,000 bps |
+| 10 Gigabit (10G)  | 10,000,000,000 bps |
+
+### How to Check
+
+1. Open **ArenaView**.
+2. Connect to your camera.
+3. Ensure the features toggle is set to "Complete" 
+4. Open the **Features** panel.
+5. Search for **Device Link Speed**.
+6. Verify that the reported value matches your camera's expected link speed.
+
+If the reported speed is lower than expected:
+
+- Verify that the Ethernet adapter supports the camera's link speed.
+- Confirm that the correct Ethernet port is being used.
+- Check the network cable (Cat6/Cat6a recommended for higher-speed cameras).
+- Ensure the network adapter drivers are up to date.
+- Reboot the system after making any network configuration changes.
+
+------------------------------------------------------------------------
+
+## Change Packet Size Setting
+
+<img src="Media\9000B-Device-Stream-Channel-Packet-Size.png" alt="App Preview" width="500">
+
+------------------------------------------------------------------------
+
+
+
