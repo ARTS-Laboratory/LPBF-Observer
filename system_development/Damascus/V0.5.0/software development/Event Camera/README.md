@@ -26,19 +26,15 @@ highest supported values for the settings below.
 
 ------------------------------------------------------------------------
 
-## Image Placeholder 1
+## Jumbo Packet
 
-> Insert a screenshot showing the **Jumbo Packet** setting here.
-
-![Jumbo Packet Screenshot](Media\JumboPacket.png)
+<img src="Media\JumboPacket.png" alt="App Preview" width="500">
 
 ------------------------------------------------------------------------
 
-## Image Placeholder 2
+## Receive Buffer
 
-> Insert a screenshot showing the **Receive Buffer** setting here.
-
-![Receive Buffer Screenshot](Media\ReceiveBuffers.png)
+<img src="Media\ReceiveBuffers.png" alt="App Preview" width="500">
 
 ------------------------------------------------------------------------
 
