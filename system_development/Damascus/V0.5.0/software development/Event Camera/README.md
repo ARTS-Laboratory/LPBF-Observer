@@ -6,7 +6,7 @@ The camera software requires the **LUCID Arena SDK** to be installed before the 
 
 > **Important:** During installation, you **must** enable **Developer Mode**. Failing to do so will result in missing development components required by the application.
 
----
+------------------------------------------------------------------------
 
 ## Download the Arena SDK
 
@@ -17,7 +17,7 @@ Download the Arena SDK installer using the link below (You must make an account 
 [Arena SDK Installer](https://thinklucid.com/downloads-hub/)
 
 
----
+------------------------------------------------------------------------
 
 ## Installation Instructions
 
@@ -26,7 +26,7 @@ Download the Arena SDK installer using the link below (You must make an account 
 3. Follow the installation wizard.
 4. When prompted to select installation options, **enable Developer Mode**.
 
----
+------------------------------------------------------------------------
 
 ## ⚠️ Critical Requirement: Enable Developer Mode
 
@@ -42,13 +42,13 @@ If Developer Mode is **not** selected:
 
 **Verify that the "Developer Mode" option is checked before proceeding with the installation.**
 
----
+------------------------------------------------------------------------
 
 ## Developer Mode Installation
 
 <img src="Media\DeveloperModeInstaller.png" alt="App Preview" width="500">
 
----
+------------------------------------------------------------------------
 
 ## Verify the Installation
 
@@ -59,7 +59,7 @@ After installation:
 - Confirm that you can start image acquisition successfully.
 - If the camera is not detected, verify that Developer Mode was enabled during installation.
 
----
+------------------------------------------------------------------------
 
 ## Troubleshooting
 
@@ -70,7 +70,7 @@ If the application cannot communicate with the camera:
 3. Restart the computer if prompted by the installer.
 4. If Developer Mode was not selected, rerun the installer and modify or reinstall the SDK with Developer Mode enabled.
 
----
+------------------------------------------------------------------------
 
 ## Additional Notes
 
