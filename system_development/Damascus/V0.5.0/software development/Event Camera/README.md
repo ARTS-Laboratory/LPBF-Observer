@@ -179,5 +179,116 @@ If the reported speed is lower than expected:
 
 ------------------------------------------------------------------------
 
+# Arena Python API Installation
 
+## Overview
+
+The **Arena Python API** is a Python wrapper for the Arena SDK that allows Python applications to communicate with LUCID Vision cameras.
+
+The Python API is built on top of the **Arena C API** and requires that the **Arena SDK** has already been installed.
+
+> **Important:** Install the Arena SDK **before** installing the Arena Python API.
+
+------------------------------------------------------------------------
+
+## Prerequisites
+
+Before installing the Arena Python API, ensure the following requirements are met:
+
+- Python **3.6.8** or newer
+- Arena SDK installed
+- **pywin32** package (Windows)
+
+Install **pywin32** using pip:
+
+```bash
+pip install pywin32
+```
+
+> **Note:** For systems without internet access, install the required dependencies using the **offline_installation_dependencies.zip** package included with the SDK.
+
+------------------------------------------------------------------------
+
+## Install the Arena Python API
+
+The Arena Python wheel file is installed with the Arena SDK.
+
+**Default location:**
+
+```text
+C:\ProgramData\Lucid Vision Labs\ArenaView\ArenaPy
+```
+
+Install the package using pip:
+
+```bash
+pip install arena_api-<version>-py3-none-any.whl
+```
+
+Replace `<version>` with the version of the wheel file included with your Arena SDK installation.
+
+------------------------------------------------------------------------
+
+## Installing Example Dependencies
+
+Some of the Python examples require additional Python packages.
+
+Install them by running:
+
+```bash
+pip install -r requirements_win.txt
+```
+
+------------------------------------------------------------------------
+
+## Running the Python Examples
+
+The example programs are located in:
+
+```text
+C:\ProgramData\Lucid Vision Labs\Examples\src\Python Source Code Examples
+```
+
+Run an example using Python:
+
+```bash
+python <example_name>.py
+```
+
+For example:
+
+```bash
+python save_image.py
+```
+
+------------------------------------------------------------------------
+
+## Verification
+
+After installation, verify that:
+
+- The `arena_api` package imports successfully.
+- The camera is detected.
+- One of the provided Python examples runs without errors.
+
+For example:
+
+```python
+from arena_api.system import system
+
+devices = system.create_device()
+print(f"Found {len(devices)} device(s)")
+```
+
+If no errors are reported and the connected camera is detected, the installation was successful.
+
+------------------------------------------------------------------------
+
+## Notes
+
+- The Arena Python API is included with the Windows installation of the Arena SDK.
+- Linux users must download the Python package separately from the **LUCID Downloads Hub** and follow the instructions included in the download package.
+- Ensure that the version of the Arena Python API matches the installed version of the Arena SDK.
+
+------------------------------------------------------------------------
 
