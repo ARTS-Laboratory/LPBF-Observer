@@ -211,7 +211,7 @@ pip install pywin32
 
 ## Install the Arena Python API
 
-The Arena Python wheel (`.whl`) file is installed with the Arena SDK.
+The Arena Python wheel (`.whl`) file is included with the Arena SDK installation.
 
 **Default location:**
 
@@ -219,7 +219,9 @@ The Arena Python wheel (`.whl`) file is installed with the Arena SDK.
 C:\ProgramData\Lucid Vision Labs\ArenaView\ArenaPy
 ```
 
-### Option 1 (Recommended): Install from the Wheel File Directory
+Before running the installation command, **pip must be able to locate the wheel file**. You can do this in one of two ways:
+
+### Option 1 (Recommended): Navigate to the ArenaPy Directory
 
 Open a Command Prompt or PowerShell window and change to the directory containing the wheel file:
 
@@ -237,7 +239,7 @@ pip install arena_api-<version>-py3-none-any.whl
 
 ### Option 2: Install Using the Full File Path
 
-If you are running the command from another directory, specify the full path to the wheel file:
+If you are running the command from a different directory, provide the full path to the wheel file:
 
 ```bash
 pip install "C:\ProgramData\Lucid Vision Labs\ArenaView\ArenaPy\arena_api-<version>-py3-none-any.whl"
@@ -245,10 +247,21 @@ pip install "C:\ProgramData\Lucid Vision Labs\ArenaView\ArenaPy\arena_api-<versi
 
 Replace `<version>` with the version number of the wheel file included with your Arena SDK installation.
 
-> **Note:** The `pip install` command must be able to locate the `.whl` file. If you are not currently in the `ArenaPy` directory, provide the full file path to the wheel file as shown above.
-```
+> **Important:** If the wheel file is not in your current working directory and you do not specify its full path, `pip install` will fail because it cannot locate the installation package.
 
 ------------------------------------------------------------------------
+
+## Installing Example Dependencies
+
+Some of the Python examples require additional Python packages.
+
+Install them by running:
+
+```bash
+pip install -r requirements_win.txt
+```
+
+---
 
 ## Running the Python Examples
 
@@ -256,6 +269,12 @@ The example programs are located in:
 
 ```text
 C:\ProgramData\Lucid Vision Labs\Examples\src\Python Source Code Examples
+```
+
+Navigate to the examples directory:
+
+```bash
+cd "C:\ProgramData\Lucid Vision Labs\Examples\src\Python Source Code Examples"
 ```
 
 Run an example using Python:
@@ -270,7 +289,7 @@ For example:
 python save_image.py
 ```
 
-------------------------------------------------------------------------
+---
 
 ## Verification
 
@@ -291,13 +310,13 @@ print(f"Found {len(devices)} device(s)")
 
 If no errors are reported and the connected camera is detected, the installation was successful.
 
-------------------------------------------------------------------------
+---
 
 ## Notes
 
 - The Arena Python API is included with the Windows installation of the Arena SDK.
-- Linux users must download the Python package separately from the **LUCID Downloads Hub** and follow the instructions included in the download package.
+- Linux users must download the Python package separately from the **LUCID Downloads Hub** and follow the instructions included with the download package.
 - Ensure that the version of the Arena Python API matches the installed version of the Arena SDK.
+- If multiple versions of Python are installed, verify that `pip` corresponds to the Python interpreter you intend to use (for example, `python -m pip install ...`).
 
-------------------------------------------------------------------------
-
+---
