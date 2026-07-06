@@ -211,7 +211,7 @@ pip install pywin32
 
 ## Install the Arena Python API
 
-The Arena Python wheel file is installed with the Arena SDK.
+The Arena Python wheel (`.whl`) file is installed with the Arena SDK.
 
 **Default location:**
 
@@ -219,24 +219,33 @@ The Arena Python wheel file is installed with the Arena SDK.
 C:\ProgramData\Lucid Vision Labs\ArenaView\ArenaPy
 ```
 
-Install the package using pip:
+### Option 1 (Recommended): Install from the Wheel File Directory
+
+Open a Command Prompt or PowerShell window and change to the directory containing the wheel file:
+
+```bash
+cd "C:\ProgramData\Lucid Vision Labs\ArenaView\ArenaPy"
+```
+
+Then install the package:
 
 ```bash
 pip install arena_api-<version>-py3-none-any.whl
 ```
 
-Replace `<version>` with the version of the wheel file included with your Arena SDK installation.
-
 ------------------------------------------------------------------------
 
-## Installing Example Dependencies
+### Option 2: Install Using the Full File Path
 
-Some of the Python examples require additional Python packages.
-
-Install them by running:
+If you are running the command from another directory, specify the full path to the wheel file:
 
 ```bash
-pip install -r requirements_win.txt
+pip install "C:\ProgramData\Lucid Vision Labs\ArenaView\ArenaPy\arena_api-<version>-py3-none-any.whl"
+```
+
+Replace `<version>` with the version number of the wheel file included with your Arena SDK installation.
+
+> **Note:** The `pip install` command must be able to locate the `.whl` file. If you are not currently in the `ArenaPy` directory, provide the full file path to the wheel file as shown above.
 ```
 
 ------------------------------------------------------------------------
