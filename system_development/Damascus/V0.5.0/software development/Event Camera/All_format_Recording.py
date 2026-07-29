@@ -17,13 +17,12 @@ from arena_api.system import system
 # ------------------------------------------------------------------
 # USER SETTINGS
 # ------------------------------------------------------------------
-
+current_dir = Path(__file__).resolve().parent
 OUTPUT_FOLDER = Path(
-    r"C:\Users\killedar\OneDrive - University of South Carolina"
-    r"\Documents\GitHub\LPBF-Observer"
-    r"\system_development\Damascus\V0.5.0"
-    r"\software development\Event Camera\recordings"
+    current_dir / "Recordings"
 )
+
+OUTPUT_FOLDER.mkdir(parents=True, exist_ok=True)
 
 # Match the CD-frame output rate configured in ArenaView.
 VIDEO_FPS = 30.0
