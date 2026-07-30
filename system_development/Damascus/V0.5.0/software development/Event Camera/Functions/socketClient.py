@@ -10,6 +10,8 @@ HOST = "localhost"
 COMMAND_PORT = 5000
 STREAM_PORT = 5100
 
+PACKET_IMAGE = 2
+
 
 def recvall(sock, size):
     """Receive exactly size bytes."""
@@ -40,25 +42,22 @@ def stream_thread():
 
         while True:
 
-            #
-            # Read the 4-byte JPEG length.
-            #
-            header = recvall(stream, 4)
+            header = recvall(stream, 5)
 
             if header is None:
                 print("Image stream disconnected.")
                 break
 
-            frame_len = struct.unpack(">I", header)[0]
+            packet_type = header[0]
+            payload_size = struct.unpack(">I", header[1:])[0]
 
-            #
-            # Read the JPEG image.
-            #
-            payload = recvall(stream, frame_len)
+            payload = recvall(stream, payload_size)
 
             if payload is None:
-                print("Failed to receive image.")
                 break
+
+            if packet_type != PACKET_IMAGE:
+                continue
 
             image = cv2.imdecode(
                 np.frombuffer(payload, dtype=np.uint8),
@@ -66,7 +65,6 @@ def stream_thread():
             )
 
             if image is None:
-                print("Could not decode frame.")
                 continue
 
             cv2.imshow("Live Preview", image)
@@ -109,11 +107,12 @@ with socket.create_connection((HOST, COMMAND_PORT)) as command:
 
         command.sendall((cmd + "\n").encode("ascii"))
 
+        #
+        # Replies are plain text on the command socket.
+        #
         reply = command.recv(1024).decode().strip()
 
         print(f"Server: {reply}")
 
         if cmd.upper() == "QUIT":
             break
-
-cv2.destroyAllWindows()

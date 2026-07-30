@@ -12,7 +12,7 @@ from Functions.writer_binary import BinaryRecorder
 from Functions.writer_csv import CsvRecorder
 from Functions.writer_video import VideoRecorder
 
-from Functions.udp_server import UDPStreamer
+from Functions.streaming_server import StreamingServer
 
 
 class Recorder:
@@ -30,7 +30,7 @@ class Recorder:
         csv: CsvRecorder,
         metadata: MetadataWriter,
         display: Optional[Display] = None,
-        udp_streamer: Optional[UDPStreamer] = None,
+        streaming_server: Optional[StreamingServer] = None,
         stats: RecordingStats,
         metadata_update_interval: int = 100,
     ) -> None:
@@ -45,7 +45,7 @@ class Recorder:
         self.metadata = metadata
 
         self.display = display
-        self.udp_streamer = udp_streamer
+        self.streaming_server = streaming_server
 
         self.stats = stats
 
@@ -59,6 +59,64 @@ class Recorder:
 
     def run(self) -> None:
 
+        print("Recorder.run() started")
+
+        self.running = True
+
+        self.before_recording()
+
+        self.metadata.update(
+            status="initializing",
+            stats=self.stats,
+        )
+
+        try:
+
+            print("Opening camera...")
+            self.camera.open()
+            print("Camera opened.")
+
+            self.metadata.update(
+                status="recording",
+                stats=self.stats,
+            )
+
+            print("Entering acquisition loop...")
+
+            for frame in self.camera:
+
+                if not self.running:
+                    print("Recording stopped (running == False)")
+                    break
+
+                self.on_frame(frame)
+
+                keep_going = self._process_frame(frame)
+
+
+                if not keep_going:
+                    print("Recorder requested to stop.")
+                    break
+
+            print("Exited acquisition loop.")
+
+        except Exception as exc:
+
+            print(f"Exception inside Recorder.run(): {exc}")
+            raise
+
+        finally:
+
+            print("Running shutdown()")
+            self.shutdown()
+
+            print("Running after_recording()")
+            self.after_recording()
+
+            print("Recorder.run() finished")
+
+    '''def run(self) -> None:
+
         self.running = True
 
         self.before_recording()
@@ -71,14 +129,16 @@ class Recorder:
         try:
 
             self.camera.open()
+            print("Camera opened")
 
             self.metadata.update(
                 status="recording",
                 stats=self.stats,
             )
 
+            print("Starting acquisition loop")
             for frame in self.camera:
-
+                print(f"Frame {frame.number}")
                 if not self.running:
                     break
 
@@ -91,12 +151,11 @@ class Recorder:
 
             self.shutdown()
 
-            self.after_recording()
+            self.after_recording()'''
 
     def stop(self) -> None:
         """
         Stops recording from another thread.
-        Used by the TCP server.
         """
 
         self.running = False
@@ -105,7 +164,10 @@ class Recorder:
     # Frame processing
     # ----------------------------------------------------------
 
-    def _process_frame(self, frame: Frame) -> bool:
+    def _process_frame(
+        self,
+        frame: Frame,
+    ) -> bool:
 
         if frame.incomplete:
 
@@ -137,13 +199,13 @@ class Recorder:
             )
 
         #
-        # Send only every 10th frame for the live UDP preview.
+        # Send preview over TCP.
         #
         if (
-            self.udp_streamer is not None
-            and self.stats.frame_count % 10 == 0
+            self.streaming_server is not None
+            and self.stats.frame_count % 0.05 == 0
         ):
-            self.udp_streamer.send(frame)
+            self.streaming_server.send(frame)
 
         #
         # Local OpenCV preview
@@ -154,9 +216,6 @@ class Recorder:
                 self.stats,
             )
 
-        #
-        # Headless mode
-        #
         return True
 
     # ----------------------------------------------------------
@@ -188,9 +247,9 @@ class Recorder:
             except Exception:
                 pass
 
-        if self.udp_streamer is not None:
+        if self.streaming_server is not None:
             try:
-                self.udp_streamer.close()
+                self.streaming_server.close()
             except Exception:
                 pass
 
@@ -216,5 +275,8 @@ class Recorder:
     def after_recording(self) -> None:
         pass
 
-    def on_frame(self, frame: Frame) -> None:
+    def on_frame(
+        self,
+        frame: Frame,
+    ) -> None:
         pass

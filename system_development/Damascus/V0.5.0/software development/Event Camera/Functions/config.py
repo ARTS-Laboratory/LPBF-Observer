@@ -10,3 +10,9 @@ VIDEO_FPS = 30.0
 RECORD_SECONDS: float | None = None
 VIDEO_CODEC = "MJPG"
 STREAM_BUFFER_COUNT = 50
+
+# -------------------------------------------------------
+# Camera Selection
+# -------------------------------------------------------
+
+CAMERA_SERIAL = "250200198"

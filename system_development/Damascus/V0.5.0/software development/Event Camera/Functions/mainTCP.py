@@ -91,7 +91,10 @@ def build_recorder():
     )
 
     #
-    # Command server
+    # Command server. Its "START"/"STOP" handlers must call
+    # recorder.begin_recording() / recorder.end_recording() —
+    # NOT recorder.run(), which is already running continuously
+    # below, and NOT recorder.stop(), which is a full shutdown.
     #
     tcp_server = TCPServer(
         recorder=recorder,
@@ -122,6 +125,18 @@ def main():
         return 1
 
     #
+    # Acquisition + live streaming starts immediately, independent
+    # of any command. Recording only begins once "START" is
+    # received on the command port.
+    #
+    recorder_thread = threading.Thread(
+        target=recorder.run,
+        daemon=True,
+    )
+
+    recorder_thread.start()
+
+    #
     # Wait for image-stream client in the background.
     #
     stream_thread = threading.Thread(
@@ -148,7 +163,7 @@ def main():
     print(f"Host          : {HOST}")
     print(f"Command Port  : {COMMAND_PORT}")
     print(f"Stream Port   : {STREAM_PORT}")
-    print("Waiting for clients...")
+    print("Streaming now. Send START to begin recording.")
     print()
 
     try:
@@ -168,11 +183,6 @@ def main():
 
         try:
             streaming_server.close()
-        except Exception:
-            pass
-
-        try:
-            recorder.camera.close()
         except Exception:
             pass
 

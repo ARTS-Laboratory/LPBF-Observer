@@ -4,6 +4,7 @@ import time
 
 from arena_api.system import system
 
+from Functions import config
 from Functions.arena_utilities import (
     arena_buffer_to_bgr,
     copy_buffer_payload,
@@ -12,9 +13,6 @@ from Functions.arena_utilities import (
     is_incomplete_buffer,
 )
 from Functions.frame import Frame
-
-
-STREAM_BUFFER_COUNT = 50
 
 
 # --------------------------------------------------------
@@ -37,12 +35,62 @@ class ArenaCamera:
         if self.device is not None:
             return
 
-        devices = system.create_device()
+        # Discover all GigE Vision devices
+        device_infos = system.device_infos
+
+        if not device_infos:
+            raise RuntimeError("No GigE Vision devices found.")
+
+        # Find the configured camera
+        camera_info = next(
+            (
+                info
+                for info in device_infos
+                if info.get("serial") == config.CAMERA_SERIAL
+            ),
+            None,
+        )
+
+        if camera_info is None:
+
+            available = "\n".join(
+                f"{d.get('vendor')} | "
+                f"{d.get('model')} | "
+                f"{d.get('serial')}"
+                for d in device_infos
+            )
+
+            raise RuntimeError(
+                f"Camera with serial "
+                f"{config.CAMERA_SERIAL} was not found.\n\n"
+                f"Detected devices:\n{available}"
+            )
+
+        # Open ONLY the selected camera
+        devices = system.create_device(camera_info)
 
         if not devices:
-            raise RuntimeError("No LUCID camera found.")
+            raise RuntimeError(
+                f"Unable to open camera "
+                f"{config.CAMERA_SERIAL}."
+            )
 
         self.device = devices[0]
+
+        # Verify we opened the expected camera
+        serial = str(
+            self.device.nodemap[
+                "DeviceSerialNumber"
+            ].value
+        )
+
+        if serial != config.CAMERA_SERIAL:
+            raise RuntimeError(
+                f"Opened the wrong camera "
+                f"({serial})."
+            )
+
+        self._frame_counter = 0
 
         self.camera_info = self._read_camera_information()
 
@@ -58,7 +106,14 @@ class ArenaCamera:
             except Exception:
                 pass
 
-        system.destroy_device()
+        if self.device is not None:
+
+            try:
+                system.destroy_device(self.device)
+
+            finally:
+                self.device = None
+                self.streaming = False
 
     # ----------------------------------------------------
 
@@ -67,7 +122,9 @@ class ArenaCamera:
         if self.streaming:
             return
 
-        self.device.start_stream(STREAM_BUFFER_COUNT)
+        self.device.start_stream(
+            config.STREAM_BUFFER_COUNT
+        )
 
         self.streaming = True
 
@@ -109,12 +166,13 @@ class ArenaCamera:
         try:
 
             width = int(image_buffer.width)
-
             height = int(image_buffer.height)
 
             bits = int(image_buffer.bits_per_pixel)
 
-            pixel_format = get_pixel_format_name(image_buffer)
+            pixel_format = get_pixel_format_name(
+                image_buffer
+            )
 
             frame_id = get_integer_attribute(
                 image_buffer,
@@ -128,7 +186,9 @@ class ArenaCamera:
 
             host_timestamp = time.time_ns()
 
-            incomplete = is_incomplete_buffer(image_buffer)
+            incomplete = is_incomplete_buffer(
+                image_buffer
+            )
 
             self._frame_counter += 1
             frame_number = self._frame_counter
@@ -149,9 +209,13 @@ class ArenaCamera:
                     incomplete=True,
                 )
 
-            payload = copy_buffer_payload(image_buffer)
+            payload = copy_buffer_payload(
+                image_buffer
+            )
 
-            image = arena_buffer_to_bgr(image_buffer)
+            image = arena_buffer_to_bgr(
+                image_buffer
+            )
 
             return Frame(
                 image=image,
@@ -169,7 +233,9 @@ class ArenaCamera:
 
         finally:
 
-            self.device.requeue_buffer(image_buffer)
+            self.device.requeue_buffer(
+                image_buffer
+            )
 
     # ----------------------------------------------------
 
@@ -191,7 +257,9 @@ class ArenaCamera:
         for key, node in node_names.items():
 
             try:
-                info[key] = str(self.device.nodemap[node].value)
+                info[key] = str(
+                    self.device.nodemap[node].value
+                )
 
             except Exception:
                 info[key] = "Unavailable"
@@ -203,7 +271,6 @@ class ArenaCamera:
     def __enter__(self):
 
         self.open()
-
         self.start()
 
         return self
