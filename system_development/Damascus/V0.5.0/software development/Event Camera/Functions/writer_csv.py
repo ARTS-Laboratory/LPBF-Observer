@@ -3,7 +3,7 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
-from frame import Frame
+from Functions.frame import Frame
 
 
 class CsvRecorder:

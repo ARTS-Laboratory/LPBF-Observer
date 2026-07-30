@@ -25,7 +25,7 @@ from Functions.udp_server import UDPStreamer
 # Network configuration
 # -------------------------------------------------------
 
-HOST = socket.gethostbyname(socket.gethostname())
+HOST = "localhost"
 
 COMMAND_PORT = 5000
 VIDEO_PORT = 5100

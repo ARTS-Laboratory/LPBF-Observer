@@ -4,14 +4,14 @@ import time
 
 from arena_api.system import system
 
-from arena_utilities import (
+from Functions.arena_utilities import (
     arena_buffer_to_bgr,
     copy_buffer_payload,
     get_integer_attribute,
     get_pixel_format_name,
     is_incomplete_buffer,
 )
-from frame import Frame
+from Functions.frame import Frame
 
 
 STREAM_BUFFER_COUNT = 50

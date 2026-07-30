@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import cv2
 
-from frame import Frame
-from stats import RecordingStats
+from Functions.frame import Frame
+from Functions.stats import RecordingStats
 
 
 class Display:

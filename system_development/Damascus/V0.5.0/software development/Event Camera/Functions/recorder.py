@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from typing import Optional
 
-from camera import ArenaCamera
-from display import Display
-from frame import Frame
-from metadata import MetadataWriter
-from session import RecordingSession
-from stats import RecordingStats
-from writer_binary import BinaryRecorder
-from writer_csv import CsvRecorder
-from writer_video import VideoRecorder
+from Functions.camera import ArenaCamera
+from Functions.display import Display
+from Functions.frame import Frame
+from Functions.metadata import MetadataWriter
+from Functions.session import RecordingSession
+from Functions.stats import RecordingStats
+from Functions.writer_binary import BinaryRecorder
+from Functions.writer_csv import CsvRecorder
+from Functions.writer_video import VideoRecorder
 
-from udp_server import UDPStreamer
+from Functions.udp_server import UDPStreamer
 
 
 class Recorder:
@@ -137,9 +137,16 @@ class Recorder:
             )
 
         #
-        # Send preview to LabVIEW
+        # Send only every 10th frame for the live UDP preview.
         #
-        if self.udp_streamer is not None:
+        # This keeps recording at full speed while reducing
+        # the CPU time spent resizing and JPEG-compressing
+        # preview images.
+        #
+        if (
+            self.udp_streamer is not None
+            and self.stats.frame_count % 10 == 0
+        ):
             self.udp_streamer.send(frame)
 
         #

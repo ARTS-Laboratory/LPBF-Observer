@@ -1,6 +1,6 @@
 from pathlib import Path
 
-current_dir = Path(__file__).resolve().parent
+current_dir = Path(__file__).resolve().parent.parent
 OUTPUT_FOLDER = Path(
     current_dir / "Recordings"
 )
