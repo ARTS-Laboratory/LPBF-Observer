@@ -139,10 +139,6 @@ class Recorder:
         #
         # Send only every 10th frame for the live UDP preview.
         #
-        # This keeps recording at full speed while reducing
-        # the CPU time spent resizing and JPEG-compressing
-        # preview images.
-        #
         if (
             self.udp_streamer is not None
             and self.stats.frame_count % 10 == 0
