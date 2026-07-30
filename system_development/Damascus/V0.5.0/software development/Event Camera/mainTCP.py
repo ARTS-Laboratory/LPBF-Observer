@@ -13,6 +13,7 @@ from Functions.metadata import MetadataWriter
 from Functions.writer_binary import BinaryRecorder
 from Functions.writer_csv import CsvRecorder
 from Functions.writer_video import VideoRecorder
+from Functions.display import Display
 
 from Functions.recorder import Recorder
 
@@ -69,6 +70,7 @@ def build_recorder():
     )
 
     stats = RecordingStats()
+    display = Display()
 
     #
     # Image streaming server
@@ -85,7 +87,7 @@ def build_recorder():
         binary=binary,
         csv=csv,
         metadata=metadata,
-        display=None,
+        display=display,
         stats=stats,
         streaming_server=streaming_server,
     )
@@ -99,7 +101,7 @@ def build_recorder():
         port=COMMAND_PORT,
     )
 
-    return recorder, tcp_server, streaming_server
+    return recorder, tcp_server, streaming_server, display
 
 
 # -------------------------------------------------------
@@ -110,7 +112,7 @@ def main():
 
     try:
 
-        recorder, tcp_server, streaming_server = build_recorder()
+        recorder, tcp_server, streaming_server, display = build_recorder()
 
     except Exception as exc:
 
@@ -168,6 +170,11 @@ def main():
 
         try:
             streaming_server.close()
+        except Exception:
+            pass
+
+        try:
+            display.close()
         except Exception:
             pass
 
