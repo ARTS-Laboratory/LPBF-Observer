@@ -12,22 +12,12 @@ from writer_binary import BinaryRecorder
 from writer_csv import CsvRecorder
 from writer_video import VideoRecorder
 
+from udp_server import UDPStreamer
+
 
 class Recorder:
     """
     Coordinates the recording process.
-
-    Responsibilities
-    ----------------
-    - Acquire frames from the camera
-    - Send frames to all writers
-    - Update recording statistics
-    - Update metadata periodically
-    - Display the live preview
-    - Handle startup and shutdown
-
-    This class intentionally contains very little implementation
-    logic. Individual modules are responsible for their own work.
     """
 
     def __init__(
@@ -39,7 +29,8 @@ class Recorder:
         binary: BinaryRecorder,
         csv: CsvRecorder,
         metadata: MetadataWriter,
-        display: Display,
+        display: Optional[Display] = None,
+        udp_streamer: Optional[UDPStreamer] = None,
         stats: RecordingStats,
         metadata_update_interval: int = 100,
     ) -> None:
@@ -52,19 +43,23 @@ class Recorder:
         self.csv = csv
 
         self.metadata = metadata
+
         self.display = display
+        self.udp_streamer = udp_streamer
+
         self.stats = stats
 
         self.metadata_update_interval = metadata_update_interval
+
+        self.running = False
 
     # ----------------------------------------------------------
     # Public API
     # ----------------------------------------------------------
 
     def run(self) -> None:
-        """
-        Execute the recording session.
-        """
+
+        self.running = True
 
         self.before_recording()
 
@@ -84,6 +79,9 @@ class Recorder:
 
             for frame in self.camera:
 
+                if not self.running:
+                    break
+
                 self.on_frame(frame)
 
                 if not self._process_frame(frame):
@@ -95,20 +93,19 @@ class Recorder:
 
             self.after_recording()
 
+    def stop(self) -> None:
+        """
+        Stops recording from another thread.
+        Used by the TCP server.
+        """
+
+        self.running = False
+
     # ----------------------------------------------------------
     # Frame processing
     # ----------------------------------------------------------
 
     def _process_frame(self, frame: Frame) -> bool:
-        """
-        Process one acquired frame.
-
-        Returns
-        -------
-        bool
-            True to continue recording.
-            False to stop.
-        """
 
         if frame.incomplete:
 
@@ -139,21 +136,33 @@ class Recorder:
                 stats=self.stats,
             )
 
-        continue_recording = self.display.show(
-            frame,
-            self.stats,
-        )
+        #
+        # Send preview to LabVIEW
+        #
+        if self.udp_streamer is not None:
+            self.udp_streamer.send(frame)
 
-        return continue_recording
+        #
+        # Local OpenCV preview
+        #
+        if self.display is not None:
+            return self.display.show(
+                frame,
+                self.stats,
+            )
+
+        #
+        # Headless mode
+        #
+        return True
 
     # ----------------------------------------------------------
     # Shutdown
     # ----------------------------------------------------------
 
     def shutdown(self) -> None:
-        """
-        Close all resources.
-        """
+
+        self.running = False
 
         try:
             self.video.close()
@@ -170,10 +179,17 @@ class Recorder:
         except Exception:
             pass
 
-        try:
-            self.display.close()
-        except Exception:
-            pass
+        if self.display is not None:
+            try:
+                self.display.close()
+            except Exception:
+                pass
+
+        if self.udp_streamer is not None:
+            try:
+                self.udp_streamer.close()
+            except Exception:
+                pass
 
         try:
             self.camera.close()
@@ -192,27 +208,10 @@ class Recorder:
     # ----------------------------------------------------------
 
     def before_recording(self) -> None:
-        """
-        Called before recording begins.
-
-        Override in subclasses if needed.
-        """
         pass
 
     def after_recording(self) -> None:
-        """
-        Called after recording ends.
-
-        Override in subclasses if needed.
-        """
         pass
 
     def on_frame(self, frame: Frame) -> None:
-        """
-        Called immediately after a frame is acquired.
-
-        Override in subclasses to implement custom
-        behavior (TCP streaming, ROS publishing,
-        triggering, etc.).
-        """
         pass

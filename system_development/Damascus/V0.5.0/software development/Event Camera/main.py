@@ -23,7 +23,7 @@ from Functions.camera import ArenaCamera
 from Functions.display import Display
 from Functions.metadata import MetadataWriter
 from Functions.recorder import Recorder
-from Functions.session import RecordingSession
+from Functions.session import RecordingSession  
 from Functions.stats import RecordingStats
 from Functions.writer_binary import BinaryRecorder
 from Functions.writer_csv import CsvRecorder
