@@ -4,6 +4,7 @@ from arena_api.system import system
 import logging
 import time
 from pathlib import Path
+import ctypes
 
 BASE_PATH = Path(__file__).resolve().parent
 output_path = BASE_PATH / "recordings"
@@ -54,7 +55,6 @@ def configureDevice(device) -> None:
     tl_stream["StreamPacketResendEnable"].value = True
     tl_stream["StreamEvsOutputFormat"].value = "XYTPFrame"
 
-
     logging.info("Camera configuration applied:")
     logging.info(
         f"  Acquisition Mode      : {nodemap['AcquisitionMode'].value}"
@@ -96,36 +96,12 @@ def selectDevice(devices):
 
     return device
 
-import ctypes
-
-
-def printXYTPEvents(device):
+def recordXYTPEvents(device):
     """
     Configure the EVS camera for XYTPFrame output and print
-    timestamp, x, y, polarity for each valid event.
+    timestamp, x, y, polarity for each valid event. 
     """
-
-    nodemap = device.nodemap
-    tl_stream = device.tl_stream_nodemap
-
-    #
-    # Save current settings
-    #
-
     try:
-
-        #
-        # Configure the camera exactly like the Lucid example.
-        #
-        nodemap["EventFormat"].value = "EVT3_0"
-
-        nodemap["ErcRateLimit"].value = 10.0
-
-        tl_stream["StreamEvsOutputFormat"].value = "XYTPFrame"
-
-        #
-        # Start streaming.
-        #
         device.start_stream()
 
         print("Streaming XYTP events...\n")
@@ -133,11 +109,9 @@ def printXYTPEvents(device):
         print("-" * 40)
 
         while True:
-
             buffer = device.get_buffer()
 
             try:
-
                 if buffer.is_incomplete:
                     continue
 
@@ -147,7 +121,6 @@ def printXYTPEvents(device):
                 )
 
                 bytes_per_event = buffer.bits_per_pixel // 8
-
                 valid_events = buffer.size_filled // bytes_per_event
 
                 for i in range(valid_events):
@@ -165,13 +138,10 @@ def printXYTPEvents(device):
                     )
 
             finally:
-
                 device.requeue_buffer(buffer)
 
     except KeyboardInterrupt:
-
         print("\nStopped.")
 
     finally:
-
         device.stop_stream()

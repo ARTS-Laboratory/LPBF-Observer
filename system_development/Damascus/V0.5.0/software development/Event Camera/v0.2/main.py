@@ -4,6 +4,8 @@ devices = fun.initializeDevice()
 
 device = fun.selectDevice(devices)
 
-fun.printXYTPEvents(device)
+fun.configureDevice(device)
+
+fun.recordXYTPEvents(device)
 
 fun.destroyDevice(devices)
