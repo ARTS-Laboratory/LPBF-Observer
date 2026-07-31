@@ -1,0 +1,37 @@
+{
+  "status": "completed",
+  "camera": {
+    "vendor": "Lucid Vision Labs",
+    "model": "TRT009S-E",
+    "serial_number": "250200198",
+    "firmware_version": "1.46.0.0",
+    "pixel_format": "Unavailable",
+    "event_format": "EVT3_0",
+    "event_format_size": "Bpe16",
+    "acquisition_frame_rate": "12500.0"
+  },
+  "recording": {
+    "pixel_format": "Unavailable",
+    "codec": "MJPG",
+    "fps": 30.0
+  },
+  "session": {
+    "timestamp": "2026-07-31_14-36-35",
+    "folder": "C:\\Users\\killedar\\OneDrive - University of South Carolina\\Documents\\GitHub\\LPBF-Observer\\system_development\\Damascus\\V0.5.0\\software development\\Event Camera\\Recordings\\2026-07-31_14-36-35",
+    "files": {
+      "video": "C:\\Users\\killedar\\OneDrive - University of South Carolina\\Documents\\GitHub\\LPBF-Observer\\system_development\\Damascus\\V0.5.0\\software development\\Event Camera\\Recordings\\2026-07-31_14-36-35\\recording.avi",
+      "binary": "C:\\Users\\killedar\\OneDrive - University of South Carolina\\Documents\\GitHub\\LPBF-Observer\\system_development\\Damascus\\V0.5.0\\software development\\Event Camera\\Recordings\\2026-07-31_14-36-35\\recording.bin",
+      "csv": "C:\\Users\\killedar\\OneDrive - University of South Carolina\\Documents\\GitHub\\LPBF-Observer\\system_development\\Damascus\\V0.5.0\\software development\\Event Camera\\Recordings\\2026-07-31_14-36-35\\recording.csv",
+      "metadata": "C:\\Users\\killedar\\OneDrive - University of South Carolina\\Documents\\GitHub\\LPBF-Observer\\system_development\\Damascus\\V0.5.0\\software development\\Event Camera\\Recordings\\2026-07-31_14-36-35\\metadata.json"
+    }
+  },
+  "stats": {
+    "elapsed_seconds": 93.768,
+    "frames_recorded": 2285,
+    "frames_dropped": 0,
+    "average_fps": 24.369,
+    "payload_bytes": 2105856000,
+    "payload_megabytes": 2008.301,
+    "payload_megabytes_per_second": 21.418
+  }
+}
