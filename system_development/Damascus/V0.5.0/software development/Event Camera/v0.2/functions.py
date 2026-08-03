@@ -1,10 +1,14 @@
 from pytictoc import TicToc
+from config import SERIAL_NUMBER
 import time
 from arena_api.system import system
 import logging
 import time
 from pathlib import Path
 import ctypes
+import h5py
+import numpy as np
+import datetime 
 
 BASE_PATH = Path(__file__).resolve().parent
 output_path = BASE_PATH / "recordings"
@@ -15,28 +19,108 @@ logging.basicConfig(level=logging.INFO,
                      datefmt='%Y-%m-%d %I:%M:%S %p')
 t = TicToc()
 
-def initializeDevice() -> list:
+def initializeDevice():
+    """
+    Initialize and return the configured Triton camera.
+    """
+
     t.tic()
+
     tries = 0
     triesMax = 6
     sleepTimeSecs = 10
 
     while tries < triesMax:
-        devices = system.create_device()
-        if not devices:
-            logging.info(f"Try {tries + 1} of {triesMax}: waiting for {sleepTimeSecs} seconds for a device to be connected!")
-            for secCount in range(sleepTimeSecs):
-                time.sleep(1)
-                logging.info(f"{secCount + 1} seconds passed {'.' * secCount}")
-            tries += 1
+
+        # Discover all connected GigE Vision devices
+        device_infos = system.device_infos
+
+        # Find the configured camera by serial number
+        camera_info = next(
+            (
+                info
+                for info in device_infos
+                if str(info.get("serial")) == str(SERIAL_NUMBER)
+            ),
+            None,
+        )
+
+        if camera_info is not None:
+
+            # Open ONLY the configured camera
+            devices = system.create_device(camera_info)
+
+            if devices:
+
+                device = devices[0]
+
+                # Verify the correct camera was opened
+                serial = str(
+                    device.nodemap[
+                        "DeviceSerialNumber"
+                    ].value
+                )
+
+                if serial != str(SERIAL_NUMBER):
+                    raise RuntimeError(
+                        f"Opened wrong camera ({serial}). "
+                        f"Expected {SERIAL_NUMBER}."
+                    )
+
+                logging.info(
+                    f"Connected to "
+                    f"{camera_info.get('vendor')} | "
+                    f"{camera_info.get('model')} | "
+                    f"S/N {serial}"
+                )
+
+                t.toc("Device initialization completed in")
+                return device
+
+            logging.warning(
+                f"Found camera {SERIAL_NUMBER}, "
+                "but failed to open it."
+            )
+
         else:
-            logging.info(f"Created {len(devices)} device(s)")
-            t.toc(f"Device initialization completed in")
-            return devices
-        
-    else: 
-        t.toc(f"Device initialization failed after")
-        logging.error("No device found! Please connect a device and run the example again.")
+
+            logging.info(
+                f"Try {tries + 1} of {triesMax}: "
+                f"Camera {SERIAL_NUMBER} not found."
+            )
+
+            if device_infos:
+
+                logging.info("Detected devices:")
+
+                for info in device_infos:
+
+                    logging.info(
+                        f"    {info.get('vendor')} | "
+                        f"{info.get('model')} | "
+                        f"{info.get('serial')}"
+                    )
+
+            else:
+
+                logging.info("No GigE Vision devices detected.")
+
+        tries += 1
+
+        if tries < triesMax:
+
+            logging.info(
+                f"Waiting {sleepTimeSecs} seconds before retry..."
+            )
+
+            time.sleep(sleepTimeSecs)
+
+    t.toc("Device initialization failed after")
+
+    raise RuntimeError(
+        f"Camera with serial number "
+        f"{SERIAL_NUMBER} was not found."
+    )
 
 def destroyDevice(devices) -> None:
     if devices:
@@ -91,12 +175,7 @@ def readDeviceSettings(device) -> dict:
         "packet_resend": tl_stream["StreamPacketResendEnable"].value,
     }
 
-def selectDevice(devices):
-    device = system.select_device(devices)
-
-    return device
-
-def recordXYTPEvents(device):
+def printXYTPEvents(device):
     """
     Configure the EVS camera for XYTPFrame output and print
     timestamp, x, y, polarity for each valid event. 
@@ -145,3 +224,146 @@ def recordXYTPEvents(device):
 
     finally:
         device.stop_stream()
+
+def recordEventsXYTP(device):
+    """
+    Configure the EVS camera for XYTPFrame output and print
+    timestamp, x, y, polarity for each valid event. 
+    """
+    fileCount = len([f for f in output_path.iterdir() if f.is_file()])
+    event_dtype = np.dtype([
+        ("x", np.uint16),
+        ("y", np.uint16),
+        ("t", np.uint64),  
+        ("p", np.uint8),
+    ])
+    ts = datetime.datetime.now().strftime("%I%M%S_%p_%m%d%Y")
+
+    file_name = output_path / f"event_recording_{fileCount}_{ts}.h5"
+
+    with h5py.File(file_name, "w") as event_file:
+        nodemap = device.nodemap
+        tl_stream = device.tl_stream_nodemap
+
+        event_file.attrs["camera_model"] = nodemap["DeviceModelName"].value
+        event_file.attrs["serial_number"] = nodemap["DeviceSerialNumber"].value
+        event_file.attrs["width"] = nodemap["Width"].value
+        event_file.attrs["height"] = nodemap["Height"].value
+        event_file.attrs["event_format"] = nodemap["EventFormat"].value
+        event_file.attrs["stream_output"] = (
+            tl_stream["StreamEvsOutputFormat"].value
+        )
+        event_file.attrs["recorded"] = ts
+
+        dataset = event_file.create_dataset(
+            "events",
+            shape=(0,),
+            maxshape=(None,),
+            dtype=event_dtype,
+            chunks=(500000,),
+            compression="gzip",
+            compression_opts=4
+        )
+
+        try:
+            device.start_stream()
+            start_time = time.time()
+
+            print("Streaming XYTP events...\n")
+            print(f"{'Timestamp':>15} {'X':>6} {'Y':>6} {'P':>6}")
+            print("-" * 40)
+
+            buffer_counter = 0
+            total_events = 0
+
+            while True:
+                try:
+                    buffer = device.get_buffer(timeout=2000)
+
+                except Exception as e:
+                    print(f"get_buffer() failed: {e}")
+                    break
+
+                try:
+                    if buffer.is_incomplete:
+                        continue
+
+                    src_data = ctypes.cast(
+                        buffer.pdata,
+                        ctypes.POINTER(ctypes.c_float)
+                    )
+
+                    bytes_per_event = buffer.bits_per_pixel // 8
+                    valid_events = buffer.size_filled // bytes_per_event
+
+                    raw = np.ctypeslib.as_array(
+                        src_data,
+                        shape=(valid_events, 4),
+                    )
+
+                    events = np.empty(valid_events, dtype=event_dtype)
+
+                    events["x"] = raw[:, 0]
+                    events["y"] = raw[:, 1]
+                    events["t"] = raw[:, 2]
+                    events["p"] = raw[:, 3]
+
+                    old_size = dataset.shape[0]
+                    new_size = old_size + valid_events
+
+                    dataset.resize((new_size,))
+                    dataset[old_size:new_size] = events
+
+                    total_events += valid_events
+                    buffer_counter += 1
+
+                    if buffer_counter % 500 == 0:
+
+                        event_file.flush()
+
+                        print(
+                            f"Buffers: {buffer_counter:,} | "
+                            f"Events: {total_events:,}"
+                        )
+
+                except Exception as e:
+                    print(f"Processing error: {e}")
+
+                finally:
+                    device.requeue_buffer(buffer)
+
+        except KeyboardInterrupt:
+            print("\nStopped.")
+
+        finally:
+            elapsed = time.time() - start_time
+
+            #
+            # dataset.resize() and the write that fills it are two
+            # separate statements. If recording stops (Ctrl+C, or
+            # any exception caught above) between them, the dataset
+            # can end up larger than what was actually written —
+            # h5py fills those leftover rows with 0 for every field,
+            # which corrupts anything that assumes timestamps are
+            # monotonically increasing (e.g. h5FileViewer.py).
+            # total_events only increments after a resize+write both
+            # succeed, so trimming to it removes any such dangling
+            # rows.
+            if dataset.shape[0] != total_events:
+                logging.info(
+                    f"Trimming {dataset.shape[0] - total_events} "
+                    "unwritten trailing row(s) left over from an "
+                    "interrupted buffer."
+                )
+                dataset.resize((total_events,))
+
+            event_file.attrs["total_events"] = total_events
+            event_file.attrs["total_buffers"] = buffer_counter
+            event_file.attrs["duration_seconds"] = elapsed
+
+            if elapsed > 0:
+                event_file.attrs["event_rate"] = total_events / elapsed
+
+            event_file.flush()
+
+            device.stop_stream()

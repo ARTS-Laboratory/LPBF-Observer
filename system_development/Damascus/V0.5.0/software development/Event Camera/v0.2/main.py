@@ -1,11 +1,10 @@
 import functions as fun
 
-devices = fun.initializeDevice()
-
-device = fun.selectDevice(devices)
+device = fun.initializeDevice()
 
 fun.configureDevice(device)
 
-fun.recordXYTPEvents(device)
+#fun.printXYTPEvents(device)
+fun.recordEventsXYTP(device)
 
-fun.destroyDevice(devices)
+fun.destroyDevice(device)
