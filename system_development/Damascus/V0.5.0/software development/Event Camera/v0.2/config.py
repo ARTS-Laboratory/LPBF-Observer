@@ -3,10 +3,10 @@
 # ============================================================
 
 # Playback
-VIDEO_FPS = 60
+VIDEO_FPS = 6
 
 # Time window used to accumulate events (microseconds)
-WINDOW_US = 5000         # 5 ms
+WINDOW_US = 1000         # 5 ms
 
 # Video
 VIDEO_CODEC = "MJPG"
