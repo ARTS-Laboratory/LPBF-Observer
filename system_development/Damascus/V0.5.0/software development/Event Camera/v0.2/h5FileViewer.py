@@ -19,7 +19,7 @@ BACKGROUND = 127
 POSITIVE_VALUE = 255
 NEGATIVE_VALUE = 0
 
-DECAY = 0.5         # 0.95-0.99 works well
+DECAY = 0.95         # 0.95-0.99 works well
 
 # ============================================================
 
