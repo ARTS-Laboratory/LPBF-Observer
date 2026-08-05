@@ -24,12 +24,12 @@ This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 Intern
 
 #### Bibtex
 
-@Misc{ARTSLabSituMonitoringPowder,  
+@Misc{ARTSLabControlOrientedResearch,  
   author = {{ARTS-L}ab},  
-  title  = {{LPBF}-Observer},  
+  title  = {Control-Oriented Research Environment for Energy Systems},  
   groups = {{ARTS-L}ab},  
   note = {Accessed: 20xx-xx-xx},  
-  url    = {https://github.com/ARTS-Laboratory/LPBF-Observer},  
+  url    = {https://github.com/ARTS-Laboratory/core2s},  
 }  
 
 <p align="center">
