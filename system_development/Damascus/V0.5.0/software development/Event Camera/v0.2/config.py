@@ -16,10 +16,10 @@ ERC_RATE_LIMIT = None
 # ============================================================
 
 # Playback
-VIDEO_FPS = 6
+VIDEO_FPS = 1
 
 # Time window used to accumulate events (microseconds)
-WINDOW_US = 1000         # 5 ms
+WINDOW_US = 1000        
 
 # Video
 VIDEO_CODEC = "MJPG"
