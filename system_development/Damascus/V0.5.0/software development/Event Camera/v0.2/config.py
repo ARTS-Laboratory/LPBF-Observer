@@ -2,14 +2,14 @@
 # Recording Settings
 # ============================================================
 
-POSITIVE_EVENT_BIAS = 5
+POSITIVE_EVENT_BIAS = 5    
 NEGATIVE_EVENT_BIAS = 5
 
 LOW_PASS_CUTOFF = 20
 REFRACTORY_PERIOD = -20
 
-ERC_ENABLE = True
-ERC_RATE_LIMIT = 3000
+ERC_ENABLE = False
+ERC_RATE_LIMIT = None
 
 # ============================================================
 # Reconstruction Settings

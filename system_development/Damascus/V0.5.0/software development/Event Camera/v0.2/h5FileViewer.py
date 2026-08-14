@@ -38,7 +38,7 @@ files = sorted(
 if not files:
     raise FileNotFoundError("No recordings found.")
 
-filename = files[1]
+filename = files[0]
 
 print(f"\nOpening: {filename.name}\n")
 
