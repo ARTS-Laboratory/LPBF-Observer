@@ -24,9 +24,10 @@ ERC_RATE_LIMIT = None
 # ============================================================
 
 # Time window used to accumulate events (microseconds)
-WINDOW_US = 50     
-STEP_US = 50   
+WINDOW_US = 10000     
+STEP_US = 1000
 
 # Do 'none' to use the entire recording, otherwise specify start and end times in seconds
-START_TIME_S = 4.625252
-END_TIME_S = 4.625784
+START_TIME_S = 5.64
+END_TIME_S = 6.77
+

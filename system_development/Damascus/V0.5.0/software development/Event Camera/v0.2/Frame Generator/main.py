@@ -1,6 +1,6 @@
 import frame_generator as generator
 
-FILE = 0
+FILE = 9
 
 file_name, file_path = generator.file_path(FILE)
 
