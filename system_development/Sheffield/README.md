@@ -11,4 +11,4 @@ Initial hardware design for in situ monitoring system.
 Combining the sub-components of V0.2 into a single hardware design. 
 
 ## V0.4.0 
-Firt clean version of a semi-stable lid.
+First clean version of a semi-stable lid.
