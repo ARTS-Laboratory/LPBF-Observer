@@ -9,4 +9,5 @@ print(f"File path: {file_path}\n")
 
 generator.save_metadata_md(file_name, file_path)
 
+#generator.data_viewer(file_name)
 generator.generate_frames(file_name, file_path)

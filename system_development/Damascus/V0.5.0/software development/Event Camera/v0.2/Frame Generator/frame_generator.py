@@ -8,9 +8,9 @@ import numpy as np
 # ============================================================
 # Visualization Settings
 # ============================================================
-BACKGROUND = 127
-POSITIVE_VALUE = 255
-NEGATIVE_VALUE = 0
+BACKGROUND = (40, 40, 40)     # Dark gray
+POSITIVE_VALUE = (0, 0, 255)    # Red
+NEGATIVE_VALUE = (255, 0, 0)    # Blue
 
 def file_path(filenumber):
     BASE_PATH = Path(__file__).resolve().parent.parent
@@ -77,14 +77,23 @@ def generate_frame(events,timestamps,width,height,file_path,time_begin_us,):
 
     print(f"Events in frame: {len(frame_events)}\n")
 
-    frame = np.full((height, width), 127, np.uint8)
+    
+
+    frame = np.full(
+        (height, width, 3),
+        BACKGROUND,
+        dtype=np.uint8,
+    )
 
     for event in frame_events:
 
         x = event["x"]
         y = event["y"]
 
-        frame[y, x] = POSITIVE_VALUE if event["p"] else NEGATIVE_VALUE
+        if event["p"]:
+            frame[y, x] = POSITIVE_VALUE      # Red
+        else:
+            frame[y, x] = NEGATIVE_VALUE      # Blue
 
     relative_time = (
         time_begin_us - timestamps[0]
@@ -158,6 +167,12 @@ def generate_frames(h5_file, file_path):
                 print(f"Saved frame at {current_time}")
 
             current_time += STEP_US
+
+def data_viewer(h5_file):
+    with h5py.File(h5_file, "r") as h5:
+        events = h5["events"][:]
+
+        print(events[:15])
 
 
 
