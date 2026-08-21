@@ -13,10 +13,10 @@ It is recommended to run the Event Camera software inside a Python virtual envir
 
 Open Command Prompt or PowerShell and navigate to the Event Camera project directory.
 
-Create a Python virtual environment named `.venv`:
+Create a Python virtual environment named `megaforehead`:
 
 ```bash
-python -m venv .venv
+python -m venv megaforehead
 ```
 
 Activate the virtual environment.
@@ -24,13 +24,13 @@ Activate the virtual environment.
 ### Windows
 
 ```bash
-.venv\Scripts\activate
+megaforehead\Scripts\activate
 ```
 
 ### Linux
 
 ```bash
-source .venv/bin/activate
+source megaforehead/bin/activate
 ```
 
 Once activated, the terminal should show `(.venv)` before the command prompt.
