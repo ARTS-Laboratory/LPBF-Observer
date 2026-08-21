@@ -1,3 +1,54 @@
+
+# Python Virtual Environment Setup
+
+## Overview
+
+It is recommended to run the Event Camera software inside a Python virtual environment. This keeps the project's Python packages isolated from other Python installations and helps ensure that the required dependency versions are used.
+
+> **Important:** Install the **Arena SDK** and **Arena Python API** as described below before running the Event Camera software.
+
+------------------------------------------------------------------------
+
+## Create a Virtual Environment
+
+Open Command Prompt or PowerShell and navigate to the Event Camera project directory.
+
+Create a Python virtual environment named `.venv`:
+
+```bash
+python -m venv .venv
+```
+
+Activate the virtual environment.
+
+### Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+### Linux
+
+```bash
+source .venv/bin/activate
+```
+
+Once activated, the terminal should show `(.venv)` before the command prompt.
+
+------------------------------------------------------------------------
+
+## Install the Project Requirements
+
+With the virtual environment activated, install the Python packages listed in `requirements.txt`:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+> **Note:** The `arena_api` package is supplied with the LUCID Arena SDK. If installation from `requirements.txt` cannot locate `arena_api`, install the Arena Python wheel from the Arena SDK as described in the **Arena Python API Installation** section below.
+
+------------------------------------------------------------------------
+
 # Arena SDK Installation Guide
 
 ## Overview
