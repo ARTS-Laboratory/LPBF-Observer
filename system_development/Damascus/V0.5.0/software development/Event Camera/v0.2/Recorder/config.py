@@ -10,11 +10,11 @@ SERIAL_NUMBER = 250200198
 # Recording Settings
 # ============================================================
 
-POSITIVE_EVENT_BIAS = 5    
-NEGATIVE_EVENT_BIAS = 5
+POSITIVE_EVENT_BIAS = 0
+NEGATIVE_EVENT_BIAS = 0
 
-LOW_PASS_CUTOFF = 20
-REFRACTORY_PERIOD = -20
+LOW_PASS_CUTOFF = None
+REFRACTORY_PERIOD = None
 
 ERC_ENABLE = False
 ERC_RATE_LIMIT = None
@@ -24,5 +24,5 @@ ERC_RATE_LIMIT = None
 # ============================================================
 
 # Time window used to accumulate events (microseconds)
-WINDOW_US = 1000        
+WINDOW_US = 1000       
 

@@ -1,4 +1,4 @@
-import Recorder.functions as fun
+import functions as fun
 from config import (
     POSITIVE_EVENT_BIAS,
     NEGATIVE_EVENT_BIAS,

@@ -1,5 +1,6 @@
 from __future__ import annotations
 from sys import platform
+import arena_api
 from pytictoc import TicToc
 from config import SERIAL_NUMBER
 import time
@@ -437,7 +438,7 @@ def recordEventsXYTP(device):
         event_file.attrs["software"] = "Event Camera Recorder"
         event_file.attrs["software_version"] = "0.2"
 
-        event_file.attrs["python_version"] = platform.python_version()
+        #event_file.attrs["python_version"] = platform.python_version()
 
         event_file.attrs["arena_api_version"] = getattr(
                 arena_api,
