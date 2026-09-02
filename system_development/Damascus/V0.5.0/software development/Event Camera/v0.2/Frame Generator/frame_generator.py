@@ -1,4 +1,4 @@
-from config import WINDOW_US, STEP_US, START_TIME_S, END_TIME_S
+from reconstruction_config import WINDOW_US, STEP_US, START_TIME_S, END_TIME_S
 from pathlib import Path
 
 import cv2

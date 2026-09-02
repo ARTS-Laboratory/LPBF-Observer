@@ -1,6 +1,6 @@
 import frame_generator as generator
 
-FILE = 0
+FILE = 1
 file_name, file_path = generator.file_path(FILE)
 
 print(f"Generating frames for: {file_name.name}\n")

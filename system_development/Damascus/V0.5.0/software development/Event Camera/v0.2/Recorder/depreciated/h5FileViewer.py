@@ -4,7 +4,7 @@ import cv2
 import h5py
 import numpy as np
 
-from config import (
+from Recorder.recorder_config import (
     VIDEO_FPS,
     WINDOW_US,
     VIDEO_CODEC,

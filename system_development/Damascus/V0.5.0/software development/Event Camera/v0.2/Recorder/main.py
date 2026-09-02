@@ -1,5 +1,5 @@
 import functions as fun
-from config import (
+from Recorder.recorder_config import (
     POSITIVE_EVENT_BIAS,
     NEGATIVE_EVENT_BIAS,
     LOW_PASS_CUTOFF,
