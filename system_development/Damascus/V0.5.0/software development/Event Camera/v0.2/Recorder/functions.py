@@ -2,7 +2,7 @@ from __future__ import annotations
 from sys import platform
 import arena_api
 from pytictoc import TicToc
-from Recorder.recorder_config import SERIAL_NUMBER, BUFFER_COUNT
+from recorder_config import SERIAL_NUMBER, BUFFER_COUNT
 import time
 from arena_api.system import system
 import logging
@@ -141,8 +141,8 @@ def configureDevice(device) -> None:
     tl_stream["StreamBufferHandlingMode"].value = "OldestFirst"
 
     # Give the recorder a larger RAM queue for short processing delays.
-    tl_stream["StreamBufferCountMode"].value = "Manual"
-    tl_stream["StreamBufferCountManual"].value = BUFFER_COUNT
+    #tl_stream["StreamBufferCountMode"].value = "Manual"
+    #tl_stream["StreamBufferCountManual"].value = BUFFER_COUNT
 
     tl_stream["StreamAutoNegotiatePacketSize"].value = True
     tl_stream["StreamPacketResendEnable"].value = True
@@ -441,13 +441,13 @@ def recordEventsXYTP(device):
             tl_stream["StreamPacketResendEnable"].value
         )
 
-        event_file.attrs["stream_buffer_count_mode"] = (
+        '''        event_file.attrs["stream_buffer_count_mode"] = (
             tl_stream["StreamBufferCountMode"].value
         )
 
         event_file.attrs["stream_buffer_count"] = (
             tl_stream["StreamBufferCountManual"].value
-        )
+        )'''
 
         event_file.attrs["erc_enable"] = nodemap["ErcEnable"].value
         event_file.attrs["erc_rate_limit"] = nodemap["ErcRateLimit"].value
