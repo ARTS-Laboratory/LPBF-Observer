@@ -2,7 +2,7 @@ from __future__ import annotations
 from sys import platform
 import arena_api
 from pytictoc import TicToc
-from recorder_config import SERIAL_NUMBER, BUFFER_COUNT, WARMUP_EVENT_COUNT
+from recorder_config import SERIAL_NUMBER, BUFFER_COUNT
 import time
 from arena_api.system import system
 import logging
@@ -22,8 +22,6 @@ logging.basicConfig(level=logging.INFO,
                      datefmt='%Y-%m-%d %I:%M:%S %p')
 t = TicToc()
 
-# Discard initial events before recording. This gives the camera and the
-# measurement setup time to settle before data is written to the H5 file.
 def initializeDevice():
     """
     Initialize and return the configured Triton camera.
@@ -395,20 +393,11 @@ def printXYTPEvents(device):
     finally:
         device.stop_stream()
 
-def recordEventsXYTP(
-    device,
-    warmup_event_count: int = WARMUP_EVENT_COUNT,
-):
+def recordEventsXYTP(device):
     """
-    Record XYTP events after a cumulative warm-up event count has passed.
-
-    Buffers received during warm-up are immediately requeued and are not
-    stored. The buffer that reaches the count is also discarded, so the first
-    recorded buffer begins only after the requested warm-up has completed.
+    Configure the EVS camera for XYTPFrame output and print
+    timestamp, x, y, polarity for each valid event. 
     """
-    if warmup_event_count < 0:
-        raise ValueError("warmup_event_count cannot be negative")
-
     fileCount = len([f for f in output_path.iterdir() if f.is_file()])
     event_dtype = np.dtype([
         ("x", np.uint16),
@@ -448,8 +437,6 @@ def recordEventsXYTP(
         )
 
         event_file.attrs["requested_stream_buffer_count"] = BUFFER_COUNT
-        event_file.attrs["warmup_event_count_required"] = warmup_event_count
-        event_file.attrs["recording_triggered"] = False
         event_file.attrs["erc_enable"] = nodemap["ErcEnable"].value
         event_file.attrs["erc_rate_limit"] = nodemap["ErcRateLimit"].value
         event_file.attrs["software"] = "Event Camera Recorder"
@@ -474,29 +461,15 @@ def recordEventsXYTP(
         )
 
         try:
-            print(f"Starting stream with {BUFFER_COUNT} host buffers.")
-            device.start_stream(BUFFER_COUNT)
-            armed_time = time.time()
-            recording_start_time = None
+            device.start_stream()
+            start_time = time.time()
 
-            print(
-                "\nRecorder warming up. Discarding the first "
-                f"{warmup_event_count:,} events..."
-            )
+            print("Streaming XYTP events...\n")
+            print(f"{'Timestamp':>15} {'X':>6} {'Y':>6} {'P':>6}")
+            print("-" * 40)
 
             buffer_counter = 0
             total_events = 0
-            pretrigger_buffers = 0
-            pretrigger_events = 0
-            recording_started = warmup_event_count == 0
-
-            if recording_started:
-                recording_start_time = armed_time
-                event_file.attrs["recording_triggered"] = True
-                event_file.attrs["warmup_buffers_discarded"] = 0
-                event_file.attrs["warmup_events_discarded"] = 0
-                event_file.attrs["warmup_duration_seconds"] = 0.0
-                print("No warm-up requested. Recording begins immediately.")
 
             while True:
                 try:
@@ -517,38 +490,6 @@ def recordEventsXYTP(
 
                     bytes_per_event = buffer.bits_per_pixel // 8
                     valid_events = buffer.size_filled // bytes_per_event
-
-                    if not recording_started:
-                        pretrigger_buffers += 1
-                        pretrigger_events += valid_events
-
-                        if pretrigger_events < warmup_event_count:
-                            continue
-
-                        recording_started = True
-                        recording_start_time = time.time()
-                        event_file.attrs["recording_triggered"] = True
-                        event_file.attrs["warmup_buffers_discarded"] = (
-                            pretrigger_buffers
-                        )
-                        event_file.attrs["warmup_events_discarded"] = (
-                            pretrigger_events
-                        )
-                        event_file.attrs["warmup_duration_seconds"] = (
-                            recording_start_time - armed_time
-                        )
-
-                        print(
-                            "Warm-up complete after "
-                            f"{pretrigger_events:,} discarded events. "
-                            "Recording begins with the next buffer.\n"   
-                        )
-
-                        print("Recording XYTP events...\n")
-                        print(f"{'Timestamp':>15} {'X':>6} {'Y':>6} {'P':>6}")
-                        print("-" * 40)
-
-                        continue
 
                     raw = np.ctypeslib.as_array(
                         src_data,
@@ -590,12 +531,7 @@ def recordEventsXYTP(
             print("\nStopped.")
 
         finally:
-            end_time = time.time()
-            elapsed = (
-                end_time - recording_start_time
-                if recording_start_time is not None
-                else 0.0
-            )
+            elapsed = time.time() - start_time
 
             #
             # dataset.resize() and the write that fills it are two
@@ -619,9 +555,6 @@ def recordEventsXYTP(
             event_file.attrs["total_events"] = total_events
             event_file.attrs["total_buffers"] = buffer_counter
             event_file.attrs["duration_seconds"] = elapsed
-            event_file.attrs["stream_armed_duration_seconds"] = (
-                end_time - armed_time
-            )
 
             if elapsed > 0:
                 event_file.attrs["event_rate"] = total_events / elapsed
