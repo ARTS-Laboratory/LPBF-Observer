@@ -1,12 +1,7 @@
 import frame_generator as generator
 
-<<<<<<< Updated upstream
-FILE = 2
+FILE = 6
 file_name, file_path, folders = generator.file_path(FILE)
-=======
-FILE = 3
-file_name, file_path = generator.file_path(FILE)
->>>>>>> Stashed changes
 
 print(f"Generating frames for: {file_name.name}\n")
 print(f"File path: {file_path}\n")

@@ -468,7 +468,7 @@ def recordEventsXYTP(
             shape=(0,),
             maxshape=(None,),
             dtype=event_dtype,
-            chunks=(500000,),
+            chunks=(50000,),
             compression="gzip",
             compression_opts=4
         )
