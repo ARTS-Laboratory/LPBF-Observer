@@ -1,0 +1,15 @@
+# Event Camera v0.2
+# Python 3.12
+#
+# Core third-party dependencies used by the project.
+#
+# NOTE:
+# arena_api is distributed with the LUCID Arena SDK/ArenaView installation.
+# The working environment uses arena_api 2.9.5. Install the Arena SDK-provided
+# wheel before installing/using this project if pip cannot resolve arena_api.
+
+arena_api==2.9.5
+h5py==3.16.0
+numpy==2.2.6
+opencv-python==4.12.0.88
+pytictoc==1.5.3
