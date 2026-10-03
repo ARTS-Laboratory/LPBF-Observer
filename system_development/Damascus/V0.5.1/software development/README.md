@@ -2,6 +2,6 @@
 
 ## Event + Optical
 
-## Theral + Optical
+## Thermal + Optical
 
 ## Optical + Optical
