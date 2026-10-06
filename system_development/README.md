@@ -3,7 +3,7 @@ Different system variations (i.e., product lines) are named after cities histori
 
 ## [Damascus](Damascus)
 * Damascus, Syria — historically associated with high-quality patterned steel, known for its strength and distinctive appearance.
-* Sensing system designed with multiple sensing systems.
+* Sensing system designed with multiple cameras.
 
 <img src="media/Damascus.jpg" alt="drawing" width="300"/> <br> 
 Integrated dual vision holder securely mounts a thermal camera and an optical camera for synchronized data acquisition on a custom cover. 
