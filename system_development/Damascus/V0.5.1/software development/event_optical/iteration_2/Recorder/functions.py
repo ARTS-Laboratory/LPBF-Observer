@@ -346,7 +346,7 @@ def printXYTPEvents(device):
     timestamp, x, y, polarity for each valid event. 
     """
     try:
-        device.start_stream()
+        device.start_stream(256)
 
         print("Streaming XYTP events...\n")
         print(f"{'Timestamp':>15} {'X':>6} {'Y':>6} {'P':>6}")
