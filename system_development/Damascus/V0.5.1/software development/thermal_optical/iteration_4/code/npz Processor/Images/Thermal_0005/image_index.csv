@@ -1,0 +1,2 @@
+image_number,source_frame_index,target_time_s,actual_time_s,timing_error_s,save_time_unix_ns,save_time_utc,minimum_temperature_c,maximum_temperature_c,mean_temperature_c,scale_min_c,scale_max_c,png_file
+1,0,0.000000000,0.000000000,0.000000000,1791928936349998500,2026-10-13T22:02:16.349998500Z,23.000000,30.399994,24.427143,23.000000,30.399994,Thermal_0005.png
