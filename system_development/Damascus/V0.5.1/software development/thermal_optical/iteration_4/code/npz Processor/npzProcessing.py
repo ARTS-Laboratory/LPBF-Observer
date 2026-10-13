@@ -11,19 +11,20 @@ INPUT_PATH = BASE_DIR.parent / "Recordings"
 OUTPUT_IMAGE_PATH = BASE_DIR / "Images"
 OUTPUT_CSV_PATH = BASE_DIR / "CSV"
 
-# None exports every frame already captured at equal intervals by LabVIEW and
-# Python. Set a larger interval, for example 5.0, to export one image every
-# five seconds from a recording captured more frequently.
+# Austin's server saves ONE frame per NPZ under 'temps'. Keep None to export
+# one PNG per NPZ. Timing is controlled by LabVIEW, not this exporter.
+# A larger interval is supported only for legacy multi-frame 'frames' NPZs;
+# it does not select intervals across a folder of single-frame files.
 EXPORT_INTERVAL_S = None
 
-# None/None uses one fixed min/max scale across the complete NPZ recording.
+# None/None uses a min/max scale per NPZ (per image for Austin's server).
 # For identical colors across different tests, set fixed limits such as
 # TEMPERATURE_MIN_C = 20.0 and TEMPERATURE_MAX_C = 120.0.
 TEMPERATURE_MIN_C = None
 TEMPERATURE_MAX_C = None
 
-# Preserve the earlier behavior of exporting the raw temperature matrix for
-# the hottest selected frame. This produces CSV data, not a video.
+# For Austin's files this exports the sole frame's temperatures in deg C.
+# For legacy recordings it exports the hottest selected frame.
 SAVE_HOTTEST_FRAME_CSV = True
 
 
@@ -61,7 +62,7 @@ def main():
                 frameIndex=result["hottest_source_index"],
             )
 
-    print("All recordings processed. No videos were created.")
+    print("All recordings processed and images created.")
 
 
 if __name__ == "__main__":

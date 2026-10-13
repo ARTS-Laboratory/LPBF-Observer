@@ -1,6 +1,7 @@
 import csv
 import os
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -39,15 +40,39 @@ def _scalar_from_npz(data, key, default=None):
 
 
 def loadRecording(path):
-    """Load frames and recover their elapsed capture times in seconds."""
+    """Load Austin's single-frame NPZ or a legacy multi-frame recording.
+
+    Austin's time_unix_ns is software SAVE time, not camera exposure time.
+    A single-frame file has no within-file capture interval.
+    """
     path = Path(path)
     print(f"Loading {path.name}.")
 
     with np.load(path, allow_pickle=False) as data:
-        if "frames" not in data.files:
-            raise KeyError(f"{path.name} does not contain a 'frames' array.")
-
-        frames = np.asarray(data["frames"], dtype=np.float32)
+        save_time_unix_ns = None
+        if "temps" in data.files:
+            temps = np.asarray(data["temps"], dtype=np.float32)
+            if temps.ndim != 2 or 0 in temps.shape:
+                raise ValueError(f"Expected temps with shape [height, width]; got {temps.shape}.")
+            frames = temps[np.newaxis, ...]
+            recording_format = "single_frame"
+            if "time_unix_ns" in data.files:
+                stamp = np.asarray(data["time_unix_ns"])
+                if stamp.size != 1 or not np.issubdtype(stamp.dtype, np.integer):
+                    raise ValueError("time_unix_ns must be one integer Unix timestamp.")
+                save_time_unix_ns = int(stamp.reshape(-1)[0])
+            elapsed_s = np.array([0.0], dtype=np.float64)
+            frame_timestamps_ns = np.array([], dtype=np.int64)
+            capture_interval_s = None
+            timestamp = "" if save_time_unix_ns is None else _format_save_time(save_time_unix_ns)
+        elif "frames" in data.files:
+            frames = np.asarray(data["frames"], dtype=np.float32)
+            recording_format = "multi_frame"
+        else:
+            raise KeyError(
+                f"{path.name} contains neither 'temps' (new server) nor 'frames' (legacy). "
+                f"Available keys: {data.files}"
+            )
         if frames.ndim != 3:
             raise ValueError(
                 f"Expected frames with shape [N, height, width]; got {frames.shape}."
@@ -55,17 +80,20 @@ def loadRecording(path):
         if frames.shape[0] == 0:
             raise ValueError(f"{path.name} contains no thermal frames.")
 
-        timestamp = _scalar_from_npz(data, "timestamp", "")
-        capture_interval_s = _scalar_from_npz(data, "capture_interval_s", None)
+        if recording_format == "multi_frame":
+            timestamp = _scalar_from_npz(data, "timestamp", "")
+            capture_interval_s = _scalar_from_npz(data, "capture_interval_s", None)
 
-        if "frame_timestamps_ns" in data.files:
+        if recording_format == "multi_frame" and "frame_timestamps_ns" in data.files:
             frame_timestamps_ns = np.asarray(
                 data["frame_timestamps_ns"], dtype=np.int64
             ).reshape(-1)
-        else:
+        elif recording_format == "multi_frame":
             frame_timestamps_ns = np.array([], dtype=np.int64)
 
-        if "elapsed_s" in data.files:
+        if recording_format == "single_frame":
+            pass  # One shot; elapsed time within this file is zero.
+        elif "elapsed_s" in data.files:
             elapsed_s = np.asarray(data["elapsed_s"], dtype=np.float64).reshape(-1)
         elif frame_timestamps_ns.size:
             elapsed_s = (
@@ -109,7 +137,16 @@ def loadRecording(path):
         "capture_interval_s": (
             None if capture_interval_s is None else float(capture_interval_s)
         ),
+        "recording_format": recording_format,
+        "save_time_unix_ns": save_time_unix_ns,
     }
+
+
+def _format_save_time(timestamp_ns):
+    """Preserve integer nanoseconds in a UTC ISO timestamp."""
+    seconds, nanoseconds = divmod(int(timestamp_ns), 1_000_000_000)
+    dt = datetime.fromtimestamp(seconds, tz=timezone.utc)
+    return dt.strftime("%Y-%m-%dT%H:%M:%S") + f".{nanoseconds:09d}Z"
 
 
 def loadData(path, name=None):
@@ -200,11 +237,23 @@ def saveImages(
     frames = recording["frames"]
     elapsed_s = recording["elapsed_s"]
 
+    if recording["recording_format"] == "single_frame" and interval_s is not None:
+        raise ValueError(
+            "Use EXPORT_INTERVAL_S = None for Austin's one-frame-per-file NPZs. "
+            "Capture timing is controlled by LabVIEW; this exporter processes each file."
+        )
+
     indices, target_times_s = selectEqualIntervalFrames(elapsed_s, interval_s)
     selected = frames[indices]
 
-    low_c = float(np.nanmin(frames)) if temp_min_c is None else float(temp_min_c)
-    high_c = float(np.nanmax(frames)) if temp_max_c is None else float(temp_max_c)
+    finite = frames[np.isfinite(frames)]
+    if finite.size == 0 or np.any(~np.any(np.isfinite(frames), axis=(1, 2))):
+        raise ValueError("Every thermal frame must contain at least one finite temperature.")
+    low_c = float(finite.min()) if temp_min_c is None else float(temp_min_c)
+    high_c = float(finite.max()) if temp_max_c is None else float(temp_max_c)
+    if low_c == high_c and temp_min_c is None and temp_max_c is None:
+        low_c -= 0.5
+        high_c += 0.5
     if not np.isfinite(low_c) or not np.isfinite(high_c) or high_c <= low_c:
         raise ValueError(
             f"Invalid temperature scale: minimum={low_c}, maximum={high_c}."
@@ -218,30 +267,35 @@ def saveImages(
     for image_number, (frame_index, target_s, frame) in enumerate(
         zip(indices, target_times_s, selected), start=1
     ):
-        actual_s = int(elapsed_s[frame_index])
+        actual_s = float(elapsed_s[frame_index])
         normalized = np.clip((frame - low_c) / (high_c - low_c), 0.0, 1.0)
-        normalized = np.nan_to_num(normalized, nan=0.0)
+        normalized = np.nan_to_num(normalized, nan=0.0, posinf=1.0, neginf=0.0)
         image_8bit = np.rint(normalized * 255.0).astype(np.uint8)
-        filename = (
-            f"thermal_{actual_s:09d}.png"
-            # f"thermal_{image_number:05d}_"
-            # "target_{target_s:010.3f}s_actual_{actual_s:010.3f}s.png"
-
-        )
+        if recording["recording_format"] == "single_frame":
+            filename = f"{path.stem}.png"
+        else:
+            filename = (
+                f"thermal_{image_number:06d}_"
+                f"target_{target_s:010.3f}s_actual_{actual_s:010.3f}s.png"
+            )
         image_path = folder / filename
         _write_inferno_png(image_8bit, image_path)
 
         rows.append(
             {
-                # "image_number": image_number,
-                # "source_frame_index": int(frame_index),
-                # "target_time_s": f"{target_s:.9f}",
-                "actual_time_s": f"{actual_s:09d}",
-                # "timing_error_s": f"{actual_s - target_s:.9f}",
-                # "minimum_temperature_c": f"{np.nanmin(frame):.6f}",
-                # "maximum_temperature_c": f"{np.nanmax(frame):.6f}",
-                # "mean_temperature_c": f"{np.nanmean(frame):.6f}",
-                # "png_file": filename,
+                "image_number": image_number,
+                "source_frame_index": int(frame_index),
+                "target_time_s": f"{target_s:.9f}",
+                "actual_time_s": f"{actual_s:.9f}",
+                "timing_error_s": f"{actual_s - target_s:.9f}",
+                "save_time_unix_ns": recording["save_time_unix_ns"] if recording["save_time_unix_ns"] is not None else "",
+                "save_time_utc": recording["timestamp"] if recording["recording_format"] == "single_frame" else "",
+                "minimum_temperature_c": f"{np.min(frame[np.isfinite(frame)]):.6f}",
+                "maximum_temperature_c": f"{np.max(frame[np.isfinite(frame)]):.6f}",
+                "mean_temperature_c": f"{np.mean(frame[np.isfinite(frame)]):.6f}",
+                "scale_min_c": f"{low_c:.6f}",
+                "scale_max_c": f"{high_c:.6f}",
+                "png_file": filename,
             }
         )
 
@@ -250,7 +304,7 @@ def saveImages(
         writer.writeheader()
         writer.writerows(rows)
 
-    hottest_local_index = int(np.nanargmax(np.nanmax(selected, axis=(1, 2))))
+    hottest_local_index = int(np.argmax(np.max(np.where(np.isfinite(selected), selected, -np.inf), axis=(1, 2))))
     hottest_source_index = int(indices[hottest_local_index])
     elapsed = time.perf_counter() - started
 

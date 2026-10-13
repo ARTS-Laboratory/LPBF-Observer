@@ -38,10 +38,6 @@ class CameraClient(otc.IRImagerClient):
         self.recording = False
         self.recorded_frames = []   # RAM buffer: list of float32 temp maps
         self.recorded_timestamps = []
-        self.capture_interval_s = 1.0
-        self._capture_interval_ns = int(1e9)
-        self._next_capture_ns = None
-        self._recording_started_ns = None
         self._latest_frame = None
         self._frame_updated = False
         self._builder = otc.ImageBuilder(
@@ -54,13 +50,6 @@ class CameraClient(otc.IRImagerClient):
         self._frame_updated = True
 
         if self.recording:
-            now_ns = time.perf_counter_ns()
-
-            # Keep the live preview at the camera frame rate, but only copy a
-            # calibrated thermal frame when the next interval is due.
-            if self._next_capture_ns is not None and now_ns < self._next_capture_ns:
-                return
-
             frame = self._latest_frame.thermalFrame
             h = frame.getHeight()
             w = frame.getWidth()
@@ -69,29 +58,15 @@ class CameraClient(otc.IRImagerClient):
             temp_flat = np.empty(h * w, dtype=np.float32)
             frame.copyTemperaturesTo(temp_flat)
             
-            self.recorded_frames.append(temp_flat.reshape(h, w).copy())
-            self.recorded_timestamps.append(now_ns)
+            self.recorded_frames.append(temp_flat.reshape(h, w))
+            self.recorded_timestamps.append(time.perf_counter_ns())
 
-            # Advance from the previous target instead of from now. This
-            # prevents image-copy and disk delays from accumulating as drift.
-            self._next_capture_ns += self._capture_interval_ns
-            while self._next_capture_ns <= now_ns:
-                self._next_capture_ns += self._capture_interval_ns
-
-    def start_recording(self, interval_s=1.0):
-        """Capture one calibrated temperature map every ``interval_s`` seconds."""
-        interval_s = float(interval_s)
-        if not np.isfinite(interval_s) or interval_s <= 0:
-            raise ValueError("Capture interval must be a finite number greater than 0.")
-
+    def start_recording(self):
+        """Clear the buffer and begin capturing thermal frames into RAM."""
         self.recorded_frames = []
         self.recorded_timestamps = []
-        self.capture_interval_s = interval_s
-        self._capture_interval_ns = max(1, int(round(interval_s * 1e9)))
-        self._recording_started_ns = time.perf_counter_ns()
-        self._next_capture_ns = self._recording_started_ns
         self.recording = True
-        print(f"Interval recording started: {interval_s:g} s.")
+        print("Recording started.")
 
     def stop_recording(self):
         """Stop capturing and return the collected frames."""
@@ -111,17 +86,10 @@ class CameraClient(otc.IRImagerClient):
         
         
         stack = np.stack(self.recorded_frames, axis=0)
-        timestamps_ns = np.array(self.recorded_timestamps, dtype=np.int64)
-        elapsed_s = (
-            (timestamps_ns - timestamps_ns[0]).astype(np.float64) / 1e9
-        )
-
         np.savez_compressed(
             path,
             frames=stack,
-            frame_timestamps_ns=timestamps_ns,
-            elapsed_s=elapsed_s,
-            capture_interval_s=np.array(self.capture_interval_s, dtype=np.float64),
+            frame_timestamps_ns=np.array(self.recorded_timestamps, dtype=np.int64),
             timestamp=np.array(datetime.datetime.now().isoformat())
         )
         print(f"Saved {stack.shape[0]} frames → {path}")
@@ -211,8 +179,8 @@ def runSocketServer(client, HOST, PORT, stopFeed, imager):
             while True:
                 dataRec = connect.recv(1024)
                 clientInput = dataRec.decode().strip().lower()
-                if clientInput == 'record' or clientInput.startswith('record '):
-                    startRecord(client, connect, clientInput)
+                if clientInput == 'record':
+                    startRecord(client, connect)
                 elif clientInput == 'stop':
                     stopRecord(client, connect)
                 elif clientInput == 'quit':
@@ -227,23 +195,10 @@ def runSocketServer(client, HOST, PORT, stopFeed, imager):
                 else:
                     unknownCommand(connect)
         
-def startRecord(client, connect, command='record'):
+def startRecord(client, connect):
     if not client.recording:
-        parts = command.split()
-        try:
-            interval_s = float(parts[1]) if len(parts) == 2 else 1.0
-            if len(parts) > 2:
-                raise ValueError
-            client.start_recording(interval_s)
-        except (ValueError, IndexError):
-            connect.sendall(
-                b'Invalid record command. Use: record <interval_seconds>\n'
-            )
-            return
-
-        connect.sendall(
-            f'Recording started; interval={interval_s:g} s\n'.encode()
-        )
+        connect.sendall(b'Recording started\n')
+        client.start_recording()
     else:
         connect.sendall(b'Already recording. Press s to stop.\n')
         print("Already recording — press s to stop.")
