@@ -33,3 +33,12 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+
+# Microsoft Office temporary / lock files
+~$*
+*.tmp
+*.temp
+*.asd
+*.wbk
+*.xlk
