@@ -42,3 +42,4 @@ venv.bak/
 *.asd
 *.wbk
 *.xlk
+.DS_Store
