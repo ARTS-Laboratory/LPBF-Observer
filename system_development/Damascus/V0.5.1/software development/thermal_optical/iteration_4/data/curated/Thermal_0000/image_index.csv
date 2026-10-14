@@ -1,2 +1,2 @@
 image_number,source_frame_index,target_time_s,actual_time_s,timing_error_s,save_time_unix_ns,save_time_utc,minimum_temperature_c,maximum_temperature_c,mean_temperature_c,scale_min_c,scale_max_c,png_file
-1,0,0.000000000,0.000000000,0.000000000,1791917088020432900,2026-10-13T18:44:48.020432900Z,22.900002,24.400002,23.794125,22.900002,24.400002,Thermal_test_000.png
+1,0,0.000000000,0.000000000,0.000000000,1791928931386390000,2026-10-13T22:02:11.386390000Z,22.900002,30.199997,24.351967,22.900002,30.199997,Thermal_0000.png
