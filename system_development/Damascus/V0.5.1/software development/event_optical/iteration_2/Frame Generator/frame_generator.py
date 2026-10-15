@@ -14,21 +14,48 @@ NEGATIVE_VALUE = (255, 0, 0)    # Blue
 
 def file_path(filenumber):
     BASE_PATH = Path(__file__).resolve().parent.parent
-    RECORDINGS = BASE_PATH / "Recorder" / "recordings"
 
+    RECORDINGS = BASE_PATH / "Recorder" / "recordings"
     RECONSTRUCTIONS = BASE_PATH / "Frame Generator" / "reconstructions"
+
     RECONSTRUCTIONS.mkdir(parents=True, exist_ok=True)
 
-    files = sorted(
-        RECORDINGS.glob("*.h5"),
-        key=lambda f: f.stat().st_mtime,
-        reverse=False,
+    # Find the folder belonging to this recording number.
+    recording_folders = sorted(
+        RECORDINGS.glob(f"event_recording_{filenumber}_*"),
+        key=lambda folder: folder.stat().st_mtime,
+        reverse=True,
     )
 
-    if not files:
-        raise FileNotFoundError("No recordings found.")
+    if not recording_folders:
+        raise FileNotFoundError(
+            f"No recording folder found for recording {filenumber} in:\n"
+            f"{RECORDINGS}"
+        )
 
-    filename = files[filenumber]
+    recording_folder = recording_folders[0]
+
+    # Find the original HDF5 file inside the recording folder.
+    h5_files = sorted(
+        recording_folder.glob("event_recording_*.h5"),
+        key=lambda file: file.stat().st_mtime,
+        reverse=True,
+    )
+
+    # Avoid accidentally selecting a curated file.
+    h5_files = [
+        file for file in h5_files
+        if not file.name.endswith("_curated.h5")
+    ]
+
+    if not h5_files:
+        raise FileNotFoundError(
+            f"No event HDF5 file found inside:\n"
+            f"{recording_folder}"
+        )
+
+    filename = h5_files[0]
+
     file_path = RECONSTRUCTIONS / filename.stem
     file_path.mkdir(parents=True, exist_ok=True)
 
@@ -43,7 +70,8 @@ def file_path(filenumber):
     for folder in folders.values():
         folder.mkdir(parents=True, exist_ok=True)
 
-    print(f"\nOpening: {filename.name}\n")
+    print(f"\nRecording folder: {recording_folder}")
+    print(f"Opening: {filename.name}\n")
 
     return filename, file_path, folders
 
