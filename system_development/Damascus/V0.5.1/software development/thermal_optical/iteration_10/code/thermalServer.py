@@ -6,6 +6,7 @@ The preview reads the completed NPZ after each successful save. It holds the
 last saved image between saves and shows a waiting image before the first save.
 Dependencies: numpy, Pillow, and the installed Optris OTC SDK.
 """
+
 import os, sys, socket, threading, time, math, io, struct
 from pathlib import Path
 import numpy as np
@@ -80,7 +81,7 @@ class SavedNpzPreview:
         draw.text((6, height + 4), Path(path).name[:70], fill="white")
         draw.text((6, height + 21),
                   f"Range: {lo:.2f} to {hi:.2f} C | auto-scaled preview", fill="white")
-        saved_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(saved_ns / 1e9))
+        saved_time = time.strftime("%H:%M:%S", time.localtime(saved_ns / 1e9))
         draw.text((6, height + 38), "Host save time: " + saved_time, fill="white")
         return cls._packet_for(image)
 
