@@ -347,26 +347,30 @@ def save_curated_h5(
 def generate_frames(h5_file, file_path, folders):
 
     with h5py.File(h5_file, "r") as h5:
-
         events = h5["events"][:]
         timestamps = events["t"].astype(np.int64)
 
-        WRAP_PERIOD_US = 1 << 24          # 16,777,216
-        WRAP_THRESHOLD_US = WRAP_PERIOD_US // 2
+        # Detect backwards timestamp jumps.
+        timestamp_resets = np.flatnonzero(
+            np.diff(timestamps) < 0
+        ) + 1
 
-        timestamps = timestamps.astype(np.int64)
+        if len(timestamp_resets) > 0:
+            first_reset = int(timestamp_resets[0])
 
-        diffs = np.diff(timestamps)
-
-        wrap_mask = diffs < -WRAP_THRESHOLD_US
-
-        if wrap_mask.any():
-
-            offsets = np.cumsum(
-                np.where(wrap_mask, WRAP_PERIOD_US, 0)
+            print(
+                "\nWARNING: Timestamp reset detected at event "
+                f"{first_reset:,}: "
+                f"{timestamps[first_reset - 1]} -> "
+                f"{timestamps[first_reset]}"
             )
 
-            timestamps[1:] += offsets
+            print(
+                "Discarding events after the first timestamp reset.\n"
+            )
+
+            events = events[:first_reset]
+            timestamps = timestamps[:first_reset]
 
         width = int(h5.attrs["width"])
         height = int(h5.attrs["height"])
@@ -383,6 +387,17 @@ def generate_frames(h5_file, file_path, folders):
             end_time = recording_end
         else:
             end_time = recording_start + int(END_TIME_S * 1_000_000)
+
+        # Never reconstruct beyond the valid timestamp range.
+        end_time = min(end_time, recording_end)
+
+        if current_time >= end_time:
+            raise ValueError(
+                "The configured reconstruction time range contains "
+                "no valid events. "
+                f"Available duration: "
+                f"{(recording_end - recording_start) / 1_000_000:.6f} seconds."
+            )
 
         save_curated_h5(
             h5_file,

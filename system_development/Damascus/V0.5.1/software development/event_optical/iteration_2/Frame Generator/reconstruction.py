@@ -1,7 +1,7 @@
 import frame_generator as generator
 from telemetry import plot_telemetry
 
-FILE = 0
+FILE = 2
 
 file_name, file_path, folders = generator.file_path(FILE)
 

@@ -114,6 +114,9 @@ def recordEventsXYTP(
         armed_time = None
         recording_start_time = None
         stream_started = False
+        last_frame_id = None
+        missing_buffer_count = 0
+        total_payload_bytes = 0
 
         try:
             print(f"Starting stream with {BUFFER_COUNT} host buffers.")
@@ -199,6 +202,18 @@ def recordEventsXYTP(
 
                         continue
 
+                    # Track every recorded buffer, not only every 500th buffer.
+                    current_frame_id = int(buffer.frame_id)
+
+                    if last_frame_id is not None:
+                        frame_gap = current_frame_id - last_frame_id
+
+                        if frame_gap > 1:
+                            missing_buffer_count += frame_gap - 1
+
+                    last_frame_id = current_frame_id
+                    total_payload_bytes += int(buffer.size_filled)
+
                     raw = np.ctypeslib.as_array(
                         src_data,
                         shape=(valid_events, 4),
@@ -224,6 +239,8 @@ def recordEventsXYTP(
                         telemetry.sample(
                             tl_stream,
                             total_events=total_events,
+                            total_payload_bytes=total_payload_bytes,
+                            missing_buffers=missing_buffer_count,
                             incomplete_buffers=incomplete_buffer_count,
                             get_buffer_errors=get_buffer_error_count,
                         )
@@ -324,6 +341,9 @@ def recordEventsXYTP(
 
             if telemetry is not None:
                 telemetry.close()
+
+            event_file.attrs["missing_buffers"] = missing_buffer_count
+            event_file.attrs["total_payload_bytes"] = total_payload_bytes
 
             event_file.attrs["stream_telemetry_file"] = telemetry_path.name
             event_file.attrs["incomplete_buffers"] = incomplete_buffer_count

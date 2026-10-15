@@ -25,6 +25,9 @@ class StreamTelemetry:
         "total_events",
         "incomplete_buffers",
         "get_buffer_errors",
+        "host_payload_rate_B_s",
+        "total_payload_bytes",
+        "missing_buffers",
     )
 
     def __init__(
@@ -47,6 +50,7 @@ class StreamTelemetry:
         self._start_time = time.monotonic()
         self._last_sample_time = self._start_time
         self._last_total_events = 0
+        self._last_total_payload_bytes = 0
 
     @staticmethod
     def _read_node(tl_stream: Any, node_name: str) -> float | None:
@@ -63,6 +67,8 @@ class StreamTelemetry:
         total_events: int,
         incomplete_buffers: int,
         get_buffer_errors: int,
+        total_payload_bytes: int,
+        missing_buffers: int,
     ) -> bool:
         """Write a telemetry row when the sampling interval has elapsed.
 
@@ -78,6 +84,10 @@ class StreamTelemetry:
         recorded_event_rate = (
             (int(total_events) - self._last_total_events) / elapsed_since_last
         )
+
+        host_payload_rate = (
+            int(total_payload_bytes) - self._last_total_payload_bytes
+        ) / elapsed_since_last
 
         self._writer.writerow(
             {
@@ -95,11 +105,15 @@ class StreamTelemetry:
                 "total_events": int(total_events),
                 "incomplete_buffers": int(incomplete_buffers),
                 "get_buffer_errors": int(get_buffer_errors),
+                "host_payload_rate_B_s": f"{host_payload_rate:.6f}",
+                "total_payload_bytes": int(total_payload_bytes),
+                "missing_buffers": int(missing_buffers),
             }
         )
         self._file.flush()
 
         self._last_sample_time = now
+        self._last_total_payload_bytes = int(total_payload_bytes)
         self._last_total_events = int(total_events)
         return True
 
