@@ -128,7 +128,7 @@ def configureDevice(device) -> None:
     tl_stream = device.tl_stream_nodemap
     nodemap["AcquisitionMode"].value = "Continuous"
     nodemap["EventFormat"].value = "EVT3_0"
-    tl_stream["StreamBufferHandlingMode"].value = "NewestOnly"
+    tl_stream["StreamBufferHandlingMode"].value = "OldestFirst"
     tl_stream["StreamAutoNegotiatePacketSize"].value = True
     tl_stream["StreamPacketResendEnable"].value = True
     tl_stream["StreamEvsOutputFormat"].value = "XYTPFrame"

@@ -28,6 +28,8 @@ def plot_telemetry(h5_file, output_folder):
     h5_file = Path(h5_file)
     output_folder = Path(output_folder)
 
+    output_folder.mkdir(parents=True, exist_ok=True)
+
     telemetry_csv = h5_file.with_name(
         f"{h5_file.stem}_stream_telemetry.csv"
     )
@@ -82,6 +84,14 @@ def plot_telemetry(h5_file, output_folder):
         )
     ]
 
+    host_payload_gbps = [
+        value * 8 / 1_000_000_000
+        for value in _read_column(
+            rows,
+            "host_payload_rate_B_s",
+        )
+    ]
+
     incomplete_buffers = _read_column(
         rows,
         "incomplete_buffers",
@@ -126,8 +136,15 @@ def plot_telemetry(h5_file, output_folder):
     axes[1].plot(
         time_s,
         link_throughput_gbps,
-        label="link throughput",
+        label="Camera-reported link throughput",
         color="tab:orange",
+    )
+
+    axes[1].plot(
+        time_s,
+        host_payload_gbps,
+        label="Recorded XYTP payload throughput",
+        color="tab:cyan",
     )
 
     axes[1].axhline(
@@ -137,7 +154,7 @@ def plot_telemetry(h5_file, output_folder):
         label="2.5 GbE camera-link limit",
     )
 
-    axes[1].set_ylabel("Gb/s")
+    axes[1].set_ylabel("Throughput (Gb/s)")
     axes[1].grid(True, alpha=0.3)
     axes[1].legend()
 
@@ -156,6 +173,15 @@ def plot_telemetry(h5_file, output_folder):
         where="post",
         label="get_buffer errors",
         color="tab:red",
+    )
+
+    missing_buffers = _read_column(rows, "missing_buffers")
+
+    axes[2].step(
+        time_s,
+        missing_buffers,
+        where="post",
+        label="Frame-ID gaps",
     )
 
     axes[2].set_xlabel("elapsed recording time (s)")
