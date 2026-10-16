@@ -1,48 +1,58 @@
 # Thermal + Optical
+* these notes provide details re: functionality
+* see README inside code folder for details
 
-## Iteration #1
+## Iteration 01
 * intial integration, optical starts, optris calibrates, then thermal starts on record.
 * "delay" problem fixed in iteration 3
 
-## Iteration #2
+
+## Iteration 02
 * Run VI -> Optical starts after Optris calibration, Thermal starts on "Record"
 * output:
 	optical_000000000 (in milisec)
  
 	thermal_000000001 (in n values)
 
-## Iteration #3
+
+## Iteration 03
 * output:
 	optical_0000 (indexes)
  
 	thermal_0000 (indexes)
 	
-## Iteration #4
+	
+## Iteration 04
 * (code based on new, simplfied server file (thermalServer.py). no preview. no backwards communication to labview. NPZ processor code gives PNGs & CSVs for each file name)
 * labview --(file name)--> thermalServer --> npz output
 * output:
 	thermal_0000 (indexes)
 	
-## Iteration #5
+	
+## Iteration 05
 * v4 functionality plus folder path and all camera functions (flag, focus, start, stop)
 * output:
 	Recordings/thermal_0000.npz
 * npzProcessing.py gives:
 	Images/thermal_0000/thermal_0000.png & .csv
 
-## Iteration #6
+
+## Iteration 06
 * optical (ONLY) vi with input capture interval
 * output:
 	Data/optical_0000.png
 
-## Iteration #7
+
+## Iteration 07
 * combined vi thermal and optical functionality (updated verion of iteration 3)
 
-## Iteration #8
+
+## Iteration 08
 * thermal + optical capture in a loop together
 * npzProcessor is now in the data folder
 
-## Iteration #9
+
+## Iteration 09
 * thermal + optical capture in a loop together with file names based on timestamp
 * dataset alignment possible with file names
 
@@ -56,5 +66,11 @@
 * npzProcessing.py gives: (so we arrow through the images)
 	Images/thermal_0000.png
 	CSV/   thermal_0000.csv
+
+
+## Iteration 10
+* thermal + optical capture in a loop together with file names based on timestamp and shared folder path
+* npz shows thermal preview
+* indicators: thermal frame out, optical frame out, time b/w frames
 
 
