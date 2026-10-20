@@ -133,6 +133,9 @@ def configureDevice(device) -> None:
     tl_stream["StreamPacketResendEnable"].value = True
     tl_stream["StreamEvsOutputFormat"].value = "XYTPFrame"
 
+    # Accumulate events for 1 ms per XYTP buffer instead of approximately 80 us.
+    tl_stream["StreamFrameGeneratorAccumTime"].value = 2000
+
     # ERC (ErcEnable / ErcRateLimit) intentionally left out here --
     # it's controlled by setErcSettings() instead, so there's one
     # place that decides its value, not two that can disagree.
@@ -158,6 +161,10 @@ def configureDevice(device) -> None:
     logging.info(
         f"  Packet Resend         : "
         f"{tl_stream['StreamPacketResendEnable'].value}"
+    )
+    logging.info(
+        f"  Frame Accumulation    : "
+        f"{tl_stream['StreamFrameGeneratorAccumTime'].value} us"
     )
 
 def setEventBiases(

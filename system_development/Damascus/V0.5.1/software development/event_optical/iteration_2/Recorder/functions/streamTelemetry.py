@@ -27,7 +27,6 @@ class StreamTelemetry:
         "get_buffer_errors",
         "host_payload_rate_B_s",
         "total_payload_bytes",
-        "missing_buffers",
     )
 
     def __init__(
@@ -68,7 +67,6 @@ class StreamTelemetry:
         incomplete_buffers: int,
         get_buffer_errors: int,
         total_payload_bytes: int,
-        missing_buffers: int,
     ) -> bool:
         """Write a telemetry row when the sampling interval has elapsed.
 
@@ -107,7 +105,6 @@ class StreamTelemetry:
                 "get_buffer_errors": int(get_buffer_errors),
                 "host_payload_rate_B_s": f"{host_payload_rate:.6f}",
                 "total_payload_bytes": int(total_payload_bytes),
-                "missing_buffers": int(missing_buffers),
             }
         )
         self._file.flush()

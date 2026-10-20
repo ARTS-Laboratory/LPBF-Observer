@@ -44,3 +44,8 @@ system_development/Damascus/V0.5.0/software development/Event Camera/v0.2/Event-
 *.wbk
 *.xlk
 .DS_Store
+/system_development/Damascus/V0.5.1/software development/event_optical/iteration_2/Recorder/functions/__pycache__
+/system_development/Damascus/V0.5.1/software development/event_optical/iteration_2/Frame Generator/reconstructions
+/system_development/Damascus/V0.5.1/software development/event_optical/iteration_2/Recorder/recordings
+/system_development/Damascus/V0.5.1/software development/event_optical/iteration_2/Recorder/functions/__pycache__
+/system_development/Damascus/V0.5.1/software development/event_optical/iteration_2/Recorder/functions/__pycache__

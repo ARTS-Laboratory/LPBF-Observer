@@ -1,0 +1,3 @@
+# For building the existing OpenEB 5.2.0 source against Python 3.12.
+numpy==1.26.4
+pybind11==2.13.6
