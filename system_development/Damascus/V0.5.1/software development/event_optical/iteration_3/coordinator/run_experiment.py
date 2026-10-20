@@ -120,7 +120,7 @@ def main():
     for path in required:
         if not path.exists():
             parser.error(f'Required path missing: {path}')
-    run_id = args.name + '-' + datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S') + '-' + uuid.uuid4().hex[:8]
+    run_id = args.name + '-' + datetime.now(timezone.utc).strftime('%m_%d_%Y_T%H%M%S.%fZ') + '-' + uuid.uuid4().hex[:8]
     event_parent = ROOT/'event_camera/data/recordings'/run_id
     optical_parent = ROOT/'optical_camera/data/recordings'/run_id
     run_dir = ROOT/'data/runs'/run_id
