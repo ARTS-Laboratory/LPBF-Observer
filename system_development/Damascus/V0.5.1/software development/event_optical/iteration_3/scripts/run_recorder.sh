@@ -15,4 +15,5 @@ if [[ ! -x "$python_bin" ]]; then
     echo "Python not found: $python_bin. Create the Python 3.12 environment described in README.md." >&2
     exit 2
 fi
+export LD_PRELOAD="libgentl.so.1${LD_PRELOAD:+:$LD_PRELOAD}"
 exec "$python_bin" -u -m event_optical.recorder "$@"
