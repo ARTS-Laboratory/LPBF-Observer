@@ -1,0 +1,8 @@
+[reconstruction]
+# Consecutive, non-overlapping windows in microseconds. 100000 us = 0.1 s.
+window_us = 100000
+# Seconds relative to the first CD event. Start inclusive; end exclusive.
+start_s = 0.0
+# Uncomment to cut off the end; omit to reconstruct through the last event.
+# end_s = 5.0
+modes = ["binary", "count_linear", "count_log", "signed_linear", "signed_log"]

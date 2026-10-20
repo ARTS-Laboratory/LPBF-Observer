@@ -18,6 +18,9 @@ import time
 import uuid
 
 from . import __version__
+# Camera controls and telemetry integration v1
+from .camera_controls import read_config, apply_settings
+from .stream_telemetry import StreamTelemetry
 
 
 def utc_now():
@@ -77,7 +80,7 @@ def select_serial(discovery, requested):
 
 
 def record(discovery, *, output_dir, serial="", name="capture", duration=None,
-           no_data_timeout=10.0, status_interval=1.0, stop_event=None):
+           no_data_timeout=10.0, status_interval=1.0, stop_event=None, config_path=None):
     """Capture until duration, signal, stream failure or no-data timeout.
 
     One new directory per session prevents accidental overwrites. RAW logging is
@@ -91,6 +94,7 @@ def record(discovery, *, output_dir, serial="", name="capture", duration=None,
                                      ("status_interval", status_interval, False)):
         if value is not None and (not math.isfinite(value) or value < 0 or (not allow_zero and value == 0)):
             raise ValueError(f"Invalid {label}: {value}")
+    config = read_config(config_path)
     stop_event = stop_event if stop_event is not None else threading.Event()
     selected = select_serial(discovery, serial)
     device = discovery.open(selected)
@@ -108,7 +112,7 @@ def record(discovery, *, output_dir, serial="", name="capture", duration=None,
     raw_path = session / "events.raw"
     meta_path = session / "metadata.json"
     meta = {
-        "schema_version": 1, "recorder_version": __version__, "state": "initializing",
+        "schema_version": 2, "recorder_version": __version__, "state": "initializing",
         "created_utc": utc_now(), "raw_file": raw_path.name,
         "requested_serial": serial, "selected_source": selected,
         "requested_duration_seconds": duration, "no_data_timeout_seconds": no_data_timeout,
@@ -126,14 +130,22 @@ def record(discovery, *, output_dir, serial="", name="capture", duration=None,
     stream_attempted = False
     logging_attempted = False
     failure = None
+    telemetry = None
+    meta["camera_controls"] = {}
     print(f"Camera: {selected}\nSession: {session}", flush=True)
     try:
+        meta["camera_before_settings"] = meta["camera"]
+        apply_settings(device, config, meta["camera_controls"])
+        meta["camera"] = camera_metadata(device)
+        write_metadata(meta_path, meta)
+        telemetry = StreamTelemetry(session / "stream_telemetry.csv", device, config["telemetry"])
         logging_attempted = True
         if not stream.log_raw_data(str(raw_path)):
             raise RuntimeError("HAL could not open the RAW output file.")
         stream_attempted = True
         stream.start()
         start = time.monotonic()
+        telemetry.start(start)
         last_data = last_status = start
         meta.update(state="recording", started_utc=utc_now())
         write_metadata(meta_path, meta)
@@ -150,6 +162,7 @@ def record(discovery, *, output_dir, serial="", name="capture", duration=None,
                 buffer = stream.get_latest_raw_data()  # This call writes the RAW buffer via HAL.
                 if buffer is not None:
                     meta["buffers_consumed"] += 1
+                    telemetry.consume(buffer)
                     last_data = time.monotonic()
                 del buffer
             else:
@@ -158,8 +171,10 @@ def record(discovery, *, output_dir, serial="", name="capture", duration=None,
             if no_data_timeout and now - last_data >= no_data_timeout:
                 raise RuntimeError(f"No RAW buffer received for {no_data_timeout:g}s. "
                                    "Check connectivity; use --no-data-timeout 0 for intentionally quiet capture.")
+            telemetry.sample(file_size(raw_path))
             if now - last_status >= status_interval:
                 meta.update(elapsed_seconds=now - start, raw_file_bytes=file_size(raw_path))
+                meta["telemetry"] = telemetry.summary()
                 write_metadata(meta_path, meta)
                 print(f"{now - start:8.1f}s  {meta['raw_file_bytes'] / 2**20:10.1f} MiB  "
                       f"{meta['buffers_consumed']} buffers", flush=True)
@@ -170,6 +185,8 @@ def record(discovery, *, output_dir, serial="", name="capture", duration=None,
         meta["stop_reason"] = "keyboard_interrupt"
     except Exception as exc:
         failure = exc
+        if meta["camera_controls"].get("state") != "verified":
+            meta["camera_controls"]["state"] = "failed"
         meta.update(state="error", stop_reason="error", error=str(exc))
     finally:
         capture_end = time.monotonic()
@@ -185,6 +202,8 @@ def record(discovery, *, output_dir, serial="", name="capture", duration=None,
                     buffer = stream.get_latest_raw_data()
                     if buffer is not None:
                         meta["buffers_consumed"] += 1
+                        if telemetry is not None:
+                            telemetry.consume(buffer)
                     del buffer
             except Exception as exc:
                 meta["cleanup_errors"].append(f"stop/drain: {exc}")
@@ -193,6 +212,17 @@ def record(discovery, *, output_dir, serial="", name="capture", duration=None,
                 stream.stop_log_raw_data()
             except Exception as exc:
                 meta["cleanup_errors"].append(f"stop_log_raw_data: {exc}")
+        if telemetry is not None:
+            try:
+                telemetry.sample(file_size(raw_path), force=True, phase="stopped")
+                meta["telemetry"] = telemetry.summary()
+            except Exception as exc:
+                meta["cleanup_errors"].append(f"telemetry final sample: {exc}")
+            finally:
+                try:
+                    telemetry.close()
+                except Exception as exc:
+                    meta["cleanup_errors"].append(f"telemetry close: {exc}")
         meta.update(
             stopped_utc=utc_now(), raw_file_bytes=file_size(raw_path),
             elapsed_seconds=0.0 if start is None else capture_end - start,
@@ -230,6 +260,7 @@ def main(argv=None):
     parser.add_argument("--no-data-timeout", type=float, default=10.0,
                         help="Stop on absent RAW buffers after this many seconds; 0 disables")
     parser.add_argument("--status-interval", type=float, default=1.0)
+    parser.add_argument("--config", type=Path, help="Camera bias/ERC and telemetry TOML settings")
     args = parser.parse_args(argv)
     if sys.version_info[:2] != (3, 12):
         parser.error("Use Python 3.12 and Metavision bindings built for that interpreter.")
@@ -262,7 +293,7 @@ def main(argv=None):
             return 0 if sources else 1
         record(hal.DeviceDiscovery, output_dir=args.output_dir, serial=args.serial,
                name=args.name, duration=args.duration, no_data_timeout=args.no_data_timeout,
-               status_interval=args.status_interval, stop_event=stop)
+               status_interval=args.status_interval, stop_event=stop, config_path=args.config)
         return 0
     except Exception as exc:
         print(f"Recorder error: {exc}", file=sys.stderr, flush=True)
