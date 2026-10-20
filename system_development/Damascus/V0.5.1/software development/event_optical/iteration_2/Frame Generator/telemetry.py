@@ -174,16 +174,7 @@ def plot_telemetry(h5_file, output_folder):
         label="get_buffer errors",
         color="tab:red",
     )
-
-    missing_buffers = _read_column(rows, "missing_buffers")
-
-    axes[2].step(
-        time_s,
-        missing_buffers,
-        where="post",
-        label="Frame-ID gaps",
-    )
-
+    
     axes[2].set_xlabel("elapsed recording time (s)")
     axes[2].set_ylabel("cumulative count")
     axes[2].grid(True, alpha=0.3)
