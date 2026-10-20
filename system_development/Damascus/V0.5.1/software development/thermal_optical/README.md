@@ -74,3 +74,22 @@
 * indicators: thermal frame out, optical frame out, time b/w frames
 
 
+## Iteration 11
+* additional functionality: writes a new folder in data path (instead of just writing files to specified path)
+
+
+## Iteration 12
+* thermal & optical separated (thermal_1 & optical_1) to test speeds of individual VIs
+* results:
+	thermal = ~50 ms			(consitent)
+	optical = ~[875 - 1000] ms	(very laggy)
+
+
+## Iteration 13
+* using FLIR Blackfly VI to collect images faster (it currently outputs AVI files)
+* Link to repo: https://github.com/ARTS-Laboratory/LabVIEW-code-for-Recording-FLIR-Blackfly-videos
+* next iteration will be integrating v12 thermal loop into FLIR VI for faster acquisition
+
+
+## Iteration 14
+* reconfig "FLIR Camera.vi" to output PNGsm only
