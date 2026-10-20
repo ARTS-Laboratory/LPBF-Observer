@@ -1,0 +1,51 @@
+# Linux GigE acquisition. Sequencing is handled by coordinator/run_experiment.py.
+services:
+  optical:
+    image: ${OPTICAL_DOCKER_IMAGE:-lpbf-optical:0.2}
+    network_mode: host
+    init: true
+    user: "${RUN_UID:?Use the coordinator or set RUN_UID}:${RUN_GID:?Set RUN_GID}"
+    environment:
+      HOME: /tmp
+    volumes:
+      - type: bind
+        source: ./optical_camera/data
+        target: /data
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./optical_camera/config
+        target: /settings
+        read_only: true
+        bind:
+          create_host_path: false
+    command: ["--list"]
+    stop_grace_period: 30s
+  event:
+    image: ${EVENT_DOCKER_IMAGE:-lpbf-event-optical:0.1}
+    network_mode: host
+    init: true
+    user: "${RUN_UID:?Set RUN_UID}:${RUN_GID:?Set RUN_GID}"
+    environment:
+      HOME: /tmp
+      ARENA_ROOT: /sdk/arena
+    volumes:
+      - type: bind
+        source: ./event_camera/data
+        target: /data
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./event_camera/config
+        target: /settings
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${ARENA_ROOT:?Set ARENA_ROOT to the Linux ArenaSDK_Linux_x64 directory}
+        target: /sdk/arena
+        read_only: true
+        bind:
+          create_host_path: false
+    command: ["record", "--list"]
+    stop_grace_period: 30s

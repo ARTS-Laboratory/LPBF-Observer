@@ -1,0 +1,11 @@
+*
+!vendor/
+!vendor/spinnaker-4.4.0.246-noble-amd64-pkg.tar.gz
+!vendor/spinnaker_python-4.4.0.246-cp312-cp312-linux_x86_64.tar.gz
+!discover.py
+!capture.py
+!tests/
+!tests/*.py
+!docker/
+!docker/Dockerfile
+!docker/entrypoint.sh

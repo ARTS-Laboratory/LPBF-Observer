@@ -1,0 +1,9 @@
+# Set serial to your own camera. Values are checked and read back before acquisition.
+serial = "19328838"
+exposure_us = 1010.0
+# Fixed exposure and gain prevent automatic adjustments between image captures.
+gain_db = 0.0
+pixel_format = "Mono8"
+timeout_ms = 10000
+# Optional acquisition frame-rate limit for continuous image sequences:
+# frame_rate_hz = 1.0

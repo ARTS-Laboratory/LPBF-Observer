@@ -1,8 +1,8 @@
 # Omitted camera settings are left unchanged. No automatic bias/ERC changes.
 [biases]
 # Integer offsets, not Hz or microseconds. Use only ranges reported by your camera.
-# bias_diff_on = 0   # Positive threshold: this camera reports [-88, 152]
-# bias_diff_off = 0  # Negative threshold: [-40, 200]
+# bias_diff_on = 10   # Positive threshold: this camera reports [-88, 152]
+# bias_diff_off = 10  # Negative threshold: [-40, 200]
 # bias_fo = 0        # Low-pass cutoff bias: [-43, 22]
 # bias_hpf = 0       # High-pass cutoff bias: [0, 120]
 # bias_refr = 0      # Refractory bias: [-20, 235]

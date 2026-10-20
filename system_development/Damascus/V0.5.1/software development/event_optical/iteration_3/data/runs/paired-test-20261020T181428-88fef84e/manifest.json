@@ -1,0 +1,41 @@
+{
+  "run_id": "paired-test-20261020T181428-88fef84e",
+  "state": "complete",
+  "created_utc": "2026-10-20T18:14:28.340662+00:00",
+  "policy": "event recording then one software-triggered optical image",
+  "event_duration_s": 5.0,
+  "timing": {
+    "event_stopped_utc": "2026-10-20T18:14:38.505757+00:00",
+    "photo_request_utc": "2026-10-20T18:14:38.672664+00:00"
+  },
+  "hardware_synchronized": false,
+  "optical_ready": {
+    "event": "ready",
+    "session": "/data/recordings/paired-test-20261020T181428-88fef84e/optical-20261020T181428.518305Z-f9d4dd9a"
+  },
+  "event_exit_code": 0,
+  "event_metadata": "event_camera/data/recordings/paired-test-20261020T181428-88fef84e/events-20261020T181433.312576Z-fa4cae6b/metadata.json",
+  "optical_capture": {
+    "event": "captured",
+    "id": "post-recording",
+    "session": "/data/recordings/paired-test-20261020T181428-88fef84e/optical-20261020T181428.518305Z-f9d4dd9a",
+    "frame": {
+      "index": 0,
+      "filename": "images/frame-00000000.png",
+      "request_id": "post-recording",
+      "trigger_issued_utc": "2026-10-20T18:14:38.673362+00:00",
+      "received_utc": "2026-10-20T18:14:38.859631+00:00",
+      "camera_timestamp_ns": 1704334195560,
+      "frame_id": 1,
+      "width": 5472,
+      "height": 3648,
+      "pixel_format": "Mono8",
+      "file_bytes": 5256702,
+      "save_seconds": 3.2012009289996968,
+      "elapsed_seconds": 13.54253638299997,
+      "frame_id_gap": 0
+    }
+  },
+  "optical_metadata": "optical_camera/data/recordings/paired-test-20261020T181428-88fef84e/optical-20261020T181428.518305Z-f9d4dd9a/metadata.json",
+  "finished_utc": "2026-10-20T18:14:43.299889+00:00"
+}
