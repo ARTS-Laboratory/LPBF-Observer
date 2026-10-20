@@ -1,0 +1,8 @@
+.git
+.venv
+.build
+.deps
+data
+vendor
+__pycache__
+*.egg-info
