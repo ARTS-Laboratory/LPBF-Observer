@@ -43,12 +43,48 @@ Compose configures the containers; the host-side coordinator sequences them.
 The coordinator uses Python's standard library and Docker CLI. Camera containers
 are not given the Docker socket.
 
+## Starter Python files for Visual Studio
+
+The project includes small launcher scripts for the common development workflow.
+Open the script in Visual Studio, edit the variables at the top, and press Run.
+These launchers are intentionally thin wrappers around the tested shell/Docker
+commands, so the production acquisition and reconstruction code remains in the
+camera components.
+
+| File | Edit these variables | Result |
+| --- | --- | --- |
+| `event_camera/scripts/record_file.py` | `NAME`, `DURATION_SECONDS` | Records only the event camera |
+| `event_camera/scripts/reconstruct_file.py` | `FILE_NUMBER` | Reconstructs the selected RAW recording |
+| `coordinator/run_paired.py` | `NAME`, `DURATION_SECONDS` | Records the event camera, then captures one post-recording optical image |
+
+Run the event-only launcher from the project root:
+
+```bash
+python event_camera/scripts/record_file.py
+```
+
+Run the reconstruction launcher after changing `FILE_NUMBER`:
+
+```bash
+python event_camera/scripts/reconstruct_file.py
+```
+
+Run the paired event-plus-optical launcher:
+
+```bash
+python coordinator/run_paired.py
+```
+
+The paired launcher requires Docker access and both cameras to be discoverable.
+The event-only launcher does not start or require the optical camera. The paired
+run writes one manifest linking the event RAW file, telemetry, and optical image.
+
 ## Tested cameras and software
 
 | Component | Tested value |
 | --- | --- |
-| Event camera | LUCID Triton TRT009S-E, serial `250200198`, 1280 × 720, EVT3 |
-| Optical camera | FLIR Blackfly S BFS-PGE-200S6M, serial `19328838`, 5472 × 3648 |
+| Event camera | LUCID Triton TRT009S-E, serial `250200198`, 1280 Ã— 720, EVT3 |
+| Optical camera | FLIR Blackfly S BFS-PGE-200S6M, serial `19328838`, 5472 Ã— 3648 |
 | Ethernet adapter | OWC Thunderbolt 10G adapter, Aquantia AQC113, Linux `atlantic` driver |
 | Arena SDK | Linux x64 `1.0.10.11` |
 | Event runtime | Patched OpenEB `5.2.0`, Python 3.12, NumPy 1.26.4 |
@@ -321,8 +357,8 @@ timeout_ms = 10000
 # frame_rate_hz = 1.0
 ```
 
-The reference camera read back **1010 µs** when 1000 µs was requested. Requesting
-1010 µs passed the strict readback check. Use 1010.0 for this tested setup; this
+The reference camera read back **1010 Âµs** when 1000 Âµs was requested. Requesting
+1010 Âµs passed the strict readback check. Use 1010.0 for this tested setup; this
 is not a universal exposure recommendation. If an older supplied config still
 contains 1000.0, change it before running.
 
@@ -511,6 +547,56 @@ sudo journalctl -k -b --since "5 minutes ago" --no-pager |
 
 This is a recovery procedure, not a permanent fix for the intermittent enumeration
 issue. Do not delete/recreate the saved network profile every time this occurs.
+
+The interface name may change after reconnecting. It has appeared as both
+`enp3s0` and `eth0` on the tested workstation. Always use the name currently
+shown by `ip -br link`; do not assume the old name:
+
+```bash
+ip -br link
+nmcli device status
+```
+
+If the interface is present but disconnected, activate the saved profile with
+the current name:
+
+```bash
+sudo nmcli connection up event-camera ifname <current-interface>
+```
+
+If the interface is missing but `boltctl` still reports the adapter as authorized,
+check PCIe enumeration and reload the driver:
+
+```bash
+echo 1 | sudo tee /sys/bus/pci/rescan
+sudo modprobe atlantic
+sudo lspci -nnk | rg -A4 -i 'ethernet|aquantia|marvell'
+ip -br link
+```
+
+If the Aquantia device is still absent, fully disconnect the Thunderbolt adapter,
+wait about 15 seconds, reconnect it, and rescan again. A reboot may be required
+after a failed USB4/PCIe re-enumeration. `boltctl` showing `authorized` alone does
+not guarantee that Linux created the Ethernet interface.
+
+After the interface and link-local address return, reapply the discovery rule and
+test both wrappers:
+
+```bash
+HOST_IP=$(ip -4 -o addr show <current-interface> | awk '{split($4,a,"/"); print a[1]}')
+
+sudo firewall-cmd --zone=public \
+    --add-rich-rule="rule family=\"ipv4\" source address=\"169.254.0.0/16\" destination address=\"$HOST_IP\" protocol value=\"udp\" accept" \
+    --timeout=300
+
+sudo bash optical_camera/docker/run.sh --list
+sudo bash event_camera/docker/run.sh record --list
+```
+
+The event wrapper's list syntax includes the `record` subcommand. If optical
+discovery succeeds but event discovery logs an access-denied warning naming the
+FLIR camera, this is usually the LUCID HAL probing a camera already owned by
+Spinnaker; use the explicit event serial for recording.
 
 ### SDK imports work but no cameras are discovered
 

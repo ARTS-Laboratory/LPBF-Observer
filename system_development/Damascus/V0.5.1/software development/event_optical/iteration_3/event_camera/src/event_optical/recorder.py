@@ -106,7 +106,7 @@ def record(discovery, *, output_dir, serial="", name="capture", duration=None,
 
     root = Path(output_dir).expanduser().resolve()
     root.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
+    stamp = datetime.now(timezone.utc).strftime("%m%d%Y_T%H%M%S.%fZ")
     session = root / f"{name}-{stamp}-{uuid.uuid4().hex[:8]}"
     session.mkdir(exist_ok=False)
     raw_path = session / "events.raw"
