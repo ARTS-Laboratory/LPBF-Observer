@@ -86,10 +86,14 @@
 
 
 ## Iteration 13
-* using FLIR Blackfly VI to collect images faster (it currently outputs AVI files)
+* using FLIR camera.vi to collect images faster (it currently outputs AVI files)
 * Link to repo: https://github.com/ARTS-Laboratory/LabVIEW-code-for-Recording-FLIR-Blackfly-videos
 * next iteration will be integrating v12 thermal loop into FLIR VI for faster acquisition
 
 
 ## Iteration 14
-* reconfig "FLIR Camera.vi" to output PNGsm only
+* reconfig "FLIR Camera.vi" to output PNGs only
+
+## Iteration 15
+* v14 + thermal acquisition loop
+* NPZs & PNGs write to same file path, with file names from same clock
