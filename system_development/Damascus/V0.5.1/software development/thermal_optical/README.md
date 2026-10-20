@@ -93,7 +93,12 @@
 
 ## Iteration 14
 * reconfig "FLIR Camera.vi" to output PNGs only
+* sub-iterations "14.n" are step wise attempts to write PNGs
 
 ## Iteration 15
+* optimized thermal_optical_capture.vi (not using FLIR Camera.vi structure)
+* 
+
+## Iteration 16
 * v14 + thermal acquisition loop
 * NPZs & PNGs write to same file path, with file names from same clock
