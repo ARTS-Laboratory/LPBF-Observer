@@ -94,6 +94,7 @@
 ## Iteration 14
 * reconfig "FLIR Camera.vi" to output PNGs only
 * sub-iterations "14.n" are step wise attempts to write PNGs
+* new plan: use "Stream to Image Files-example" to write PNGs (instead of reconfig FLIR Camera.vi)
 
 ## Iteration 15
 * optimized thermal_optical_capture.vi (not using FLIR Camera.vi structure)
