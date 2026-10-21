@@ -4,9 +4,7 @@ The software development kit (SDK) must be installed for the LabView VI and code
 [https://github.com/ARTS-Laboratory/LabVIEW-code-for-Recording-Optris-Xi-videos/tree/d5ae94f74cb6485d0676ad2751f1fa4b15abba6b/SDK]. 
 
 Version update:
- - Termal.VI is used to capture thermal images.
- - thermal_optical_capture_12 is the the old VI with the slower optical loop
- - Folder "VIs_needed" has supporting files for "FLIR camera.vi"
+ - thermal_optical_capture_14.vi has thermal VI working but optical VI is not working.
 
 
 
