@@ -69,7 +69,7 @@ class SavedNpzPreview:
         image = Image.new("RGB", (480, 320), (20, 20, 20))
         draw = ImageDraw.Draw(image)
         draw.text((16, 135), "Waiting for first saved thermal NPZ frame", fill="white")
-        draw.text((16, 160), "Press Record in LabVIEW to save a frame.", fill="white")
+        draw.text((16, 160), "Press START in LabVIEW to save a frame.", fill="white")
         return cls._packet_for(image)
 
     @classmethod
