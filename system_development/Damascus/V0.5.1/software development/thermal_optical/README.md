@@ -101,5 +101,12 @@
 * 
 
 ## Iteration 16
-* v14 + thermal acquisition loop
+* (v16.1) v14 + thermal acquisition loop
 * NPZs & PNGs write to same file path, with file names from same clock
+
+## Iteration 17
+* examples VI from LabView
+* Final Image Aquisition Simplified VI for capturing optical images in .png
+
+## Iteration 18
+* combined Thermal & optical VI for capturing thermal and optical images.
