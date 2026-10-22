@@ -26,6 +26,7 @@ This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 Intern
 
 @Misc{ARTSLabSituMonitoringPowder,  
   author = {{ARTS-L}ab},  
+  howpublished = {GitHub},   
   title  = {{LPBF}-Observer},  
   groups = {{ARTS-L}ab},  
   note = {Accessed: 20xx-xx-xx},  
