@@ -12,7 +12,7 @@ For each VI, measure the sustained acquisition rate under the following conditio
 
 | VI | Acquisition only (FPS) | PNG saving (FPS) | Binary saving (FPS) |
 |---|---|---|---|
-| NI-IMAQdx Snap | 5 | 1 | TBD |
-| NI-IMAQdx Grab | TBD | 2 | TBD |
+| NI-IMAQdx Snap | 5 | 1 | 5 |
+| NI-IMAQdx Grab | 16.67 | 2 | 16.67 |
 | NI-IMAQdx Low-Level Get Image | TBD | TBD | TBD |
 | NI-IMAQdx Low-Level Get Image Data| TBD | N/A | TBD |
