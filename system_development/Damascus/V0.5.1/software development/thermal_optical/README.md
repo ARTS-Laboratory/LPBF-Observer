@@ -103,6 +103,7 @@
 ## Iteration 16
 * (v16.1) v14 + thermal acquisition loop
 * NPZs & PNGs write to same file path, with file names from same clock
+* includes optical only VI "ImageAcquisition_16"
 
 ## Iteration 17
 * examples VI from LabView
@@ -110,3 +111,8 @@
 
 ## Iteration 18
 * combined Thermal & optical VI for capturing thermal and optical images.
+* where optical uses Snap.vi (still slow frame rate)
+
+## Iteration 19
+* thermal + optical VI where optical uses GetImage2.vi (still ~2fps)
+* includes optical only VI "ImageAcquisition_19"
