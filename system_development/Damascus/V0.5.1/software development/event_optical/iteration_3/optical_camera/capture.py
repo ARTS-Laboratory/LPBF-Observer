@@ -297,11 +297,27 @@ def capture_run(args, camera_factory=SpinnakerCamera, stop=None):
             reply('ready', session=str(session.path))
             try:
                 if mode == 'serve':
+                    # WINDOWS_PIPE_READER: select() on Windows accepts sockets, not stdin pipes.
+                    import queue
+                    commands = queue.Queue()
+                    input_stream = sys.stdin
+                    def read_commands():
+                        try:
+                            for command_line in input_stream:
+                                commands.put(command_line)
+                        except Exception as error:
+                            commands.put(error)
+                        finally:
+                            commands.put(None)
+                    threading.Thread(target=read_commands, daemon=True).start()
                     while not stop.is_set():
-                        if not select.select([sys.stdin], [], [], 0.2)[0]:
+                        try:
+                            line = commands.get(timeout=0.2)
+                        except queue.Empty:
                             continue
-                        line = sys.stdin.readline()
-                        if not line:
+                        if isinstance(line, Exception):
+                            raise line
+                        if line is None:
                             break
                         request = json.loads(line)
                         request_id = safe_name(request['id'])
