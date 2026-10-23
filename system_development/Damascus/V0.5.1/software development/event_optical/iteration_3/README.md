@@ -1,5 +1,7 @@
 # Event and optical camera acquisition setup
 
+Camera lens settings: `aperture: F2, focus: purple indicator ~5 mm past infinity mark (35mm/F1.8 Edmunds Optics Lens)` 
+
 Record LUCID event-camera data as a native RAW file, then take one fresh FLIR
 optical image after that recording closes. Both cameras run in separate Docker
 containers. The camera components also work independently: event recording,

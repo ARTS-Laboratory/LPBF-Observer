@@ -239,12 +239,16 @@ def record(discovery, *, output_dir, serial="", name="capture", duration=None,
         print(f"RAW: {raw_path}\nMetadata: {meta_path}\nState: {meta['state']}", flush=True)
         # Metadata is finalized before device destruction, where the known vendor
         # crash may happen. Do not mask it with os._exit() or claim successful exit.
+        print("[shutdown] releasing stream reference", flush=True)
         stream = None
+        print("[shutdown] stream reference released; releasing device reference", flush=True)
         device = None
+        print("[shutdown] device reference released", flush=True)
     if failure:
         raise RuntimeError(f"{failure} Session retained at {session}") from failure
     if meta["cleanup_errors"]:
         raise RuntimeError("Cleanup failed: " + "; ".join(meta["cleanup_errors"]))
+    print("[shutdown] record() returning normally", flush=True)
     return session
 
 

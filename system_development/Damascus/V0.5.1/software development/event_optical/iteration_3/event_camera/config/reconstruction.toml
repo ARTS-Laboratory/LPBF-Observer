@@ -5,4 +5,4 @@ window_us = 100000
 start_s = 0.0
 # Uncomment to cut off the end; omit to reconstruct through the last event.
 # end_s = 5.0
-modes = ["binary", "count_linear", "count_log", "signed_linear", "signed_log"]
+modes = ["binary"]
