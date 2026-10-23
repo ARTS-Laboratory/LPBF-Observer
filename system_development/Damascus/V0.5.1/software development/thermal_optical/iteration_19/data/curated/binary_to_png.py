@@ -15,10 +15,10 @@ import glob
 # ============================================================
 
 # Folder containing binary files
-input_folder = r"C:\GitHub\LPBF-Observer\system_development\Damascus\V0.5.1\software development\thermal_optical\iteration_19\data\raw\test_5"
+input_folder = r"C:\Users\killedar\OneDrive - University of South Carolina\GitHub\LPBF-Observer\system_development\Damascus\V0.5.1\software development\thermal_optical\iteration_19\data\raw\test_6"
 
 # Folder where PNG images will be saved
-output_folder = r"C:\GitHub\LPBF-Observer\system_development\Damascus\V0.5.1\software development\thermal_optical\iteration_19\data\raw\curated\test_5"
+output_folder = r"C:\Users\killedar\OneDrive - University of South Carolina\GitHub\LPBF-Observer\system_development\Damascus\V0.5.1\software development\thermal_optical\iteration_19\data\raw\curated\test_6"
 
 # Image resolution (CHANGE TO MATCH YOUR CAMERA)
 width = 5472
