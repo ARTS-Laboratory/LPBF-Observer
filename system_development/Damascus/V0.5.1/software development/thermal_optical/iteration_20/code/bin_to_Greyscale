@@ -1,0 +1,86 @@
+import numpy as np
+from PIL import Image
+from pathlib import Path
+
+# Folder containing the LabVIEW .bin files
+FOLDER = Path(
+    r"C:\Users\killedar\OneDrive - University of South Carolina"
+    r"\GitHub\LPBF-Observer\system_development\Damascus"
+    r"\V0.5.1\software development\thermal_optical"
+    r"\iteration_20\data\raw\test_1"
+)
+
+def convert_bin_rgbu32_to_grayscale_png(bin_path):
+    # Read file as little-endian unsigned 32-bit integers
+    data = np.fromfile(bin_path, dtype="<u4")
+
+    if len(data) < 3:
+        raise ValueError("File is too small to contain image data.")
+
+    # First two values are image dimensions
+    height = int(data[0])
+    width = int(data[1])
+
+    if height <= 0 or width <= 0:
+        raise ValueError(f"Invalid image dimensions: {height} x {width}")
+
+    # Remaining values are pixels
+    pixels = data[2:]
+
+    expected_pixels = height * width
+    if len(pixels) != expected_pixels:
+        raise ValueError(
+            f"{bin_path.name}: expected {expected_pixels} pixels, "
+            f"found {len(pixels)}"
+        )
+
+    pixels = pixels.reshape((height, width))
+
+    # Extract RGB channels from U32
+    red = ((pixels >> 16) & 0xFF).astype(np.uint8)
+    green = ((pixels >> 8) & 0xFF).astype(np.uint8)
+    blue = (pixels & 0xFF).astype(np.uint8)
+
+    # Convert to grayscale using luminance formula
+    gray = (
+        0.299 * red +
+        0.587 * green +
+        0.114 * blue
+    ).astype(np.uint8)
+
+    # Save grayscale PNG in same folder
+    out_path = bin_path.with_name(bin_path.stem + "_gray.png")
+    Image.fromarray(gray, mode="L").save(out_path)
+
+    print(f"Saved grayscale image: {out_path.name}")
+
+def main():
+    if not FOLDER.exists():
+        print(f"Folder not found:\n{FOLDER}")
+        return
+
+    bin_files = sorted(FOLDER.glob("*.bin"))
+
+    if not bin_files:
+        print("No .bin files found.")
+        return
+
+    print(f"Found {len(bin_files)} .bin files.\n")
+
+    success = 0
+    failed = 0
+
+    for bin_file in bin_files:
+        try:
+            convert_bin_rgbu32_to_grayscale_png(bin_file)
+            success += 1
+        except Exception as e:
+            failed += 1
+            print(f"Failed: {bin_file.name} -> {e}")
+
+    print("\nDone.")
+    print(f"Converted: {success}")
+    print(f"Failed: {failed}")
+
+if __name__ == "__main__":
+    main()
