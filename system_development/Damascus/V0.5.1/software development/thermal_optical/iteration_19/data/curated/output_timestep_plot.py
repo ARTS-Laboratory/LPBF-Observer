@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 # USER INPUTS
 # -----------------------------------
 
-folder_path = r"C:\GitHub\LPBF-Observer\system_development\Damascus\V0.5.1\software development\thermal_optical\iteration_19\data\raw\test_5"
+folder_path = r"C:\Users\killedar\OneDrive - University of South Carolina\GitHub\LPBF-Observer\system_development\Damascus\V0.5.1\software development\thermal_optical\iteration_20\data\raw\test_6"
 
 # Number of files to analyze (None = all files)
 num_files = 100

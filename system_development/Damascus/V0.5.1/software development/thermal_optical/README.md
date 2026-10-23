@@ -115,5 +115,15 @@
 
 ## Iteration 19
 * thermal + optical VI where optical uses GetImage2.vi (still ~2fps)
-* Contains VI for different aquisition approaches using IMAQdx. Images are captured in .png and binary format
-* optical_grab2 VI captures images at 16.67 fps. 
+* Contains VI for different aquisition approaches using IMAQdx.
+* optical_grab2 VI captures at 16.67 fps and writes binary files.
+* Optical Camera Acquisition Benchmarks table found here.
+
+## Iteration 20
+* optical_grab2 -> binary files out.
+* disagreeing image type in and out (IMAQ create format input: U16, then Grab2.vi changes to U8)
+* processing code (time_step plot generator and Binary->PNG python files)
+
+## Iteration 21
+* optical acquisition using ReadImage.vi
+	
