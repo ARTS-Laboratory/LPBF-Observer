@@ -11,7 +11,7 @@ FOLDER = Path(
     r"C:\Users\killedar\OneDrive - University of South Carolina"
     r"\GitHub\LPBF-Observer\system_development\Damascus"
     r"\V0.5.1\software development\thermal_optical"
-    r"\iteration_20\data\raw\test_1"
+    r"\iteration_20\data\raw\test_2"
 )
 
 # ============================================================

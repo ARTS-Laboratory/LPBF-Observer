@@ -115,4 +115,5 @@
 
 ## Iteration 19
 * thermal + optical VI where optical uses GetImage2.vi (still ~2fps)
-* includes optical only VI "ImageAcquisition_19"
+* Contains VI for different aquisition approaches using IMAQdx. Images are captured in .png and binary format
+* optical_grab2 VI captures images at 16.67 fps. 
