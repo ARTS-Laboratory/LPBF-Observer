@@ -125,5 +125,6 @@
 * processing code (time_step plot generator and Binary->PNG python files)
 
 ## Iteration 21
-* optical acquisition using ReadImage.vi
+* optical_grab2 where image format is directly requested from camera node (instead of IMAQ create)
+* FLIR BFS-U3-200S6M-C has ADC 10 bit & 12 bit. we want to use 10 bit and configure this format from the camera task.
 	
