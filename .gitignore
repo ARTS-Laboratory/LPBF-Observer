@@ -1,52 +1,62 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.code-workspace
 
-# Distribution / packaging
+# ==========================================
+# Python - Cache and compiled files
+# ==========================================
+__pycache__/
+*.py[cod]
+*.pyd
+
+# ==========================================
+# Python - Distribution and packaging
+# ==========================================
 .Python
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
 *.egg-info/
-.installed.cfg
 *.egg
-MANIFEST
+.eggs/
+.installed.cfg
 
-# Virtual environments
+# ==========================================
+# Python - Virtual environments
+# ==========================================
 .env
-.venv
+.venv/
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
-system_development/Damascus/V0.5.0/software development/Event Camera/v0.2/Event-Camera/
 
+# ==========================================
+# IDE and editor files
+# ==========================================
+.code-workspace
+*.code-workspace
+.vscode/
+.idea/
 
-# Microsoft Office temporary / lock files
+# ==========================================
+# Operating system files
+# ==========================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# Microsoft Office - Temporary and lock files
+# ==========================================
 ~$*
 *.tmp
 *.temp
 *.asd
 *.wbk
 *.xlk
-.DS_Store
-/system_development/Damascus/V0.5.1/software development/event_optical/iteration_2/Recorder/functions/__pycache__
-/system_development/Damascus/V0.5.1/software development/event_optical/iteration_2/Frame Generator/reconstructions
-/system_development/Damascus/V0.5.1/software development/event_optical/iteration_2/Recorder/recordings
-/system_development/Damascus/V0.5.1/software development/event_optical/iteration_2/Recorder/functions/__pycache__
-/system_development/Damascus/V0.5.1/software development/event_optical/iteration_2/Recorder/functions/__pycache__
-/system_development/Damascus/V0.5.1/software development/event_optical/iteration_3/data/runs
+
+# ==========================================
+# CAD - Temporary and backup files
+# ==========================================
+*.bak
+*.backup
+*.swp
+*.swo
