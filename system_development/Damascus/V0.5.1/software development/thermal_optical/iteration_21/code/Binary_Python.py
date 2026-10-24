@@ -8,7 +8,7 @@ import cv2
 # ==========================================
 
 # Folder containing binary images
-INPUT_FOLDER = Path(r"C:\Users\killedar\OneDrive - University of South Carolina\GitHub\LPBF-Observer\system_development\Damascus\V0.5.1\software development\thermal_optical\iteration_20\data\raw\test_6")
+INPUT_FOLDER = Path(r"C:\Users\killedar\OneDrive - University of South Carolina\GitHub\LPBF-Observer\system_development\Damascus\V0.5.1\software development\thermal_optical\iteration_21\data\raw\test_1")
 
 # PNG files will be saved inside this folder
 OUTPUT_FOLDER = INPUT_FOLDER / "Converted_PNG"
