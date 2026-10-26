@@ -147,8 +147,8 @@ ______________________________________________________________
 
 
 ## Iteration 21
-* optical_grab2 using property nodes to set pixel format & image out type
-* FLIR BFS-U3-200S6M-C has ADC 10 bit & 12 bit. ADC Bit Depth is kept at 12 Bit and Pixel format is mono12p as per the camera specifications. 
+* optical_grab2 using property nodes to set pixel format & image out type (Mono 8, GreyscaleU8)
+* FLIR BFS-U3-200S6M-C has ADC 10 bit & 12 bit. ADC Bit Depth is kept at 12 Bit and Pixel format is mono12p as per the camera specifications. (Mono12p would require GreyscaleU16)
 * Optical_grab2.vi saves the binary images in mono16 format.
 * Optical_grab2 combined with thermal image capturing to create thermal_optical_capture_21.
 
