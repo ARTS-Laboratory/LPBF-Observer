@@ -159,4 +159,7 @@ ______________________________________________________________
 
 
 ## Iteration 23
-* loop for capture and loop for file saving with buffer to maintain capture FPS and allow slow writing speed
+* loop for capture and loop for file saving with buffer to maintain capture FPS and allow slow writing speed.
+
+## Iteration 24
+* optical_grab2.vi is writing images in TDMS format.
