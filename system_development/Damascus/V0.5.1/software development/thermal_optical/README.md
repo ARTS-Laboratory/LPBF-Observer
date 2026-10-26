@@ -155,6 +155,7 @@ ______________________________________________________________
 
 ## Iteration 22
 * copy of 21 with objective to determine optimal bit depth & pixel/image format combinations
+* doesn't have a significant effect because its the file writing that is the bottleneck
 
 
 ## Iteration 23
