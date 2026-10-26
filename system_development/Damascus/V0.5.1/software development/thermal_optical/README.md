@@ -96,22 +96,26 @@
 * sub-iterations "14.n" are step wise attempts to write PNGs
 * new plan: use "Stream to Image Files-example" to write PNGs (instead of reconfig FLIR Camera.vi)
 
+
 ## Iteration 15
-* optimized thermal_optical_capture.vi (not using FLIR Camera.vi structure)
-* 
+* optimized thermal_optical_capture.vi (not using FLIR Camera.vi structure)* 
+
 
 ## Iteration 16
 * (v16.1) v14 + thermal acquisition loop
 * NPZs & PNGs write to same file path, with file names from same clock
 * includes optical only VI "ImageAcquisition_16"
 
+
 ## Iteration 17
 * examples VI from LabView
 * Final Image Aquisition Simplified VI for capturing optical images in .png
 
+
 ## Iteration 18
 * combined Thermal & optical VI for capturing thermal and optical images.
 * where optical uses Snap.vi (still slow frame rate)
+
 
 ## Iteration 19
 * thermal + optical VI where optical uses GetImage2.vi (still ~2fps)
@@ -119,14 +123,35 @@
 * optical_grab2 VI captures at 16.67 fps and writes binary files.
 * Optical Camera Acquisition Benchmarks table found here.
 
+
 ## Iteration 20
 * optical_grab2 -> binary files out.
-* disagreeing image type in and out (IMAQ create format input: U16, then Grab2.vi changes to U8)
-* processing code (time_step plot generator and Binary->PNG python files)
+
+* Experimental notes (VI params -> result)
+- Pixel Format, Image Out Type (NI MAX)
+______________________________________________________________
+
+* U8 w/o Wait -> fluctuating (4-16) FPS, file size out: 19MB
+- Mono 8, GreyscaleU8
+
+* U8 w Wait -> fluctuating (0-10) FPS, file size out: 19MB
+- Mono 8, GreyscaleU8
+
+* U16 w/o Wait -> fluctuating (1-10) FPS, file size out: 38MB
+- Mono__, GreyscaleU16
+
+* U16 w Wait -> fluctuating (1-10) FPS, file size out: 38MB
+- Mono__, GreyscaleU16
+
+* Also data processing code is here (time_step plot generator and Binary->PNG python files)
+
 
 ## Iteration 21
 * optical_grab2 where image format is directly requested from camera node (instead of IMAQ create)
 * FLIR BFS-U3-200S6M-C has ADC 10 bit & 12 bit. ADC Bit Depth is kept at 12 Bit and Pixel format is mono12p as per the camera specifications. 
 * Optical_grab2.vi saves the binary images in mono16 format.
 * Optical_grab2 combined with thermal image capturing to create thermal_optical_capture_21.
-	
+
+
+## Iteration 22
+* loop for capture and loop for file saving
