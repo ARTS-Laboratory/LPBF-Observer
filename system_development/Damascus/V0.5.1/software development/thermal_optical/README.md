@@ -155,13 +155,13 @@ ______________________________________________________________
 
 ## Iteration 22
 * copy of 21 with objective to determine optimal bit depth & pixel/image format combinations
-* doesn't have a significant effect because its the file writing that is the bottleneck
-
-
-## Iteration 23
 * optical capture for 5fps (see xlsx for params details)
 * Set in NI MAX: PixelFormat=Mono8, ImageOutType=GreyscaleU8. Click Save. Close NI MAX. Run VI.
 * we will use this one for testing (as of 10/26/2026)
+
+
+## Iteration 23
+* structure: optical acquisition loop and writing loop with buffer to maintain capture speed
 
 ## Iteration 24
 * optical capture -> tdms file out
