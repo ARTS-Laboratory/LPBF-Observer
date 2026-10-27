@@ -155,7 +155,7 @@ ______________________________________________________________
 
 ## Iteration 22
 * copy of 21 with objective to determine optimal bit depth & pixel/image format combinations
-* optical capture for 5fps (see xlsx for params details)
+* optical capture for 5fps (see TestCombos.xlsx for params details)
 * Set in NI MAX: PixelFormat=Mono8, ImageOutType=GreyscaleU8. Click Save. Close NI MAX. Run VI.
 * we will use this one for testing (as of 10/26/2026)
 
