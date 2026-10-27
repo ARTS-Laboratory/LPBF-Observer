@@ -159,4 +159,6 @@ ______________________________________________________________
 
 
 ## Iteration 23
-* loop for capture and loop for file saving with buffer to maintain capture FPS and allow slow writing speed
+* optical capture for 5fps (see xlsx for params details)
+* Set in NI MAX: PixelFormat=Mono8, ImageOutType=GreyscaleU8. Click Save. Close NI MAX. Run VI.
+
