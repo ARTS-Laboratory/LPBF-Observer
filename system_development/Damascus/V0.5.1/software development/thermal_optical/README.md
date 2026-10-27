@@ -161,4 +161,7 @@ ______________________________________________________________
 ## Iteration 23
 * optical capture for 5fps (see xlsx for params details)
 * Set in NI MAX: PixelFormat=Mono8, ImageOutType=GreyscaleU8. Click Save. Close NI MAX. Run VI.
+* we will use this one for testing (as of 10/26/2026)
 
+## Iteration 24
+* optical capture -> tdms file out
