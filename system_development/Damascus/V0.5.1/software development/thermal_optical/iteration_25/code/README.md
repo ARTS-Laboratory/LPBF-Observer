@@ -5,7 +5,8 @@ The software development kit (SDK) must be installed for the LabView VI and code
 
 Version update:
  - Thermal and optical images are captured at the rate of 2 FPS.
- _ thermal_optical_capture_18.vi has the 'Image Acquisition Simplified.vi' used for capturing the optical images keeping thermal image captuirng logic same.
+ - thermal_optical_capture_18.vi has the 'Image Acquisition Simplified.vi' used for capturing the optical images keeping thermal image captuirng logic same.
+ - BFS - U3-63S4C-C is tested for optical aquisition. More stable FPS is achieved as compared to current FLIR camera. 
 
 
 
