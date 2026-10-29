@@ -1,5 +1,5 @@
 {
-  "input_folder": "C:\\OpticalTestFolder\\test_5_1FPS_mono12p",
-  "latest_npz": "C:\\OpticalTestFolder\\test_5_1FPS_mono12p\\Thermal_853628.npz",
-  "updated_unix_ns": 1793225125192518200
+  "input_folder": "C:\\GitHub\\Dataset-LPBF-Thin-Wall-and-Cube-Thermal-Optical-Monitoring\\tests\\test_01\\data\\raw",
+  "latest_npz": "C:\\GitHub\\Dataset-LPBF-Thin-Wall-and-Cube-Thermal-Optical-Monitoring\\tests\\test_01\\data\\raw\\Thermal_31643.npz",
+  "updated_unix_ns": 1793227267261135200
 }
