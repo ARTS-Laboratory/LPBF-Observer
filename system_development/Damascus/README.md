@@ -15,6 +15,7 @@ Dual vision holder designed to take a mixture of cameras
 
 ## V0.5.0
 A more refined dual vision holder designed to take a mixture of cameras
+
 ## V0.5.1
 Adding distinct software controls for variations of the Damascus setup.
 
