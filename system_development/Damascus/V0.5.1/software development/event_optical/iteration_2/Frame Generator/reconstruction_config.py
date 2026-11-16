@@ -3,9 +3,10 @@
 # ============================================================
 
 # Time window used to accumulate events (microseconds)
-WINDOW_US = 100000
-STEP_US = 100000
+WINDOW_US = 10000
+STEP_US = 10000
 
 # Do 'none' to use the entire recording, otherwise specify start and end times in seconds
-START_TIME_S = 0
-END_TIME_S = None
+START_TIME_S = 2.590000
+#END_TIME_S = None
+END_TIME_S = START_TIME_S + 0.25

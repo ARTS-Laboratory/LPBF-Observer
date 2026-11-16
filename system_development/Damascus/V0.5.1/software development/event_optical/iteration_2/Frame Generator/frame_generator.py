@@ -12,68 +12,36 @@ BACKGROUND = (40, 40, 40)     # Dark gray
 POSITIVE_VALUE = (0, 0, 255)    # Red
 NEGATIVE_VALUE = (255, 0, 0)    # Blue
 
-def file_path(filenumber):
-    BASE_PATH = Path(__file__).resolve().parent.parent
+def file_path(recording_name):
+    base_path = Path(__file__).resolve().parent.parent
+    recordings = base_path / "Recorder" / "recordings"
 
-    RECORDINGS = BASE_PATH / "Recorder" / "recordings"
-    RECONSTRUCTIONS = BASE_PATH / "Frame Generator" / "reconstructions"
+    filename = recordings / str(recording_name)
+    if filename.suffix != ".h5":
+        filename = filename.with_suffix(".h5")
 
-    RECONSTRUCTIONS.mkdir(parents=True, exist_ok=True)
+    if not filename.is_file():
+        raise FileNotFoundError(f"Recording not found:\n{filename}")
 
-    # Find the folder belonging to this recording number.
-    recording_folders = sorted(
-        RECORDINGS.glob(f"event_recording_{filenumber}_*"),
-        key=lambda folder: folder.stat().st_mtime,
-        reverse=True,
-    )
-
-    if not recording_folders:
-        raise FileNotFoundError(
-            f"No recording folder found for recording {filenumber} in:\n"
-            f"{RECORDINGS}"
-        )
-
-    recording_folder = recording_folders[0]
-
-    # Find the original HDF5 file inside the recording folder.
-    h5_files = sorted(
-        recording_folder.glob("event_recording_*.h5"),
-        key=lambda file: file.stat().st_mtime,
-        reverse=True,
-    )
-
-    # Avoid accidentally selecting a curated file.
-    h5_files = [
-        file for file in h5_files
-        if not file.name.endswith("_curated.h5")
-    ]
-
-    if not h5_files:
-        raise FileNotFoundError(
-            f"No event HDF5 file found inside:\n"
-            f"{recording_folder}"
-        )
-
-    filename = h5_files[0]
-
-    file_path = RECONSTRUCTIONS / filename.stem
-    file_path.mkdir(parents=True, exist_ok=True)
+    output_path = base_path / "Frame Generator" / "reconstructions" / filename.stem
+    output_path.mkdir(parents=True, exist_ok=True)
 
     folders = {
-        "binary": file_path / "binary",
-        "count_linear": file_path / "count_linear",
-        "count_log": file_path / "count_log",
-        "signed_linear": file_path / "signed_linear",
-        "signed_log": file_path / "signed_log",
+        name: output_path / name
+        for name in (
+            "binary",
+            "count_linear",
+            "count_log",
+            "signed_linear",
+            "signed_log",
+        )
     }
 
     for folder in folders.values():
         folder.mkdir(parents=True, exist_ok=True)
 
-    print(f"\nRecording folder: {recording_folder}")
-    print(f"Opening: {filename.name}\n")
-
-    return filename, file_path, folders
+    print(f"\nOpening: {filename}\n")
+    return filename, output_path, folders
 
 def save_metadata_md(h5_file, file_path):
     md_file = file_path / "metadata.md"

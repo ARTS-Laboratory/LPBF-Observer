@@ -1,0 +1,41 @@
+{
+  "run_id": "test_1_lol-10_20_2026_T234935.585732Z-f061b60f",
+  "state": "complete",
+  "created_utc": "2026-10-20T23:49:35.683121+00:00",
+  "policy": "event recording then one software-triggered optical image",
+  "event_duration_s": 5.0,
+  "timing": {
+    "event_stopped_utc": "2026-10-20T23:49:46.231431+00:00",
+    "photo_request_utc": "2026-10-20T23:49:46.359499+00:00"
+  },
+  "hardware_synchronized": false,
+  "optical_ready": {
+    "event": "ready",
+    "session": "/data/recordings/test_1_lol-10_20_2026_T234935.585732Z-f061b60f/optical-20261020T234936.011157Z-6944fa3e"
+  },
+  "event_exit_code": 0,
+  "event_metadata": "event_camera/data/recordings/test_1_lol-10_20_2026_T234935.585732Z-f061b60f/events-10_20_2026_T234940.994804Z/metadata.json",
+  "optical_capture": {
+    "event": "captured",
+    "id": "post-recording",
+    "session": "/data/recordings/test_1_lol-10_20_2026_T234935.585732Z-f061b60f/optical-20261020T234936.011157Z-6944fa3e",
+    "frame": {
+      "index": 0,
+      "filename": "images/frame-00000000.png",
+      "request_id": "post-recording",
+      "trigger_issued_utc": "2026-10-20T23:49:46.360713+00:00",
+      "received_utc": "2026-10-20T23:49:46.547796+00:00",
+      "camera_timestamp_ns": 1602729993600,
+      "frame_id": 1,
+      "width": 5472,
+      "height": 3648,
+      "pixel_format": "Mono8",
+      "file_bytes": 7346376,
+      "save_seconds": 6.172174288999486,
+      "elapsed_seconds": 16.708817816999726,
+      "frame_id_gap": 0
+    }
+  },
+  "optical_metadata": "optical_camera/data/recordings/test_1_lol-10_20_2026_T234935.585732Z-f061b60f/optical-20261020T234936.011157Z-6944fa3e/metadata.json",
+  "finished_utc": "2026-10-20T23:49:53.359005+00:00"
+}
